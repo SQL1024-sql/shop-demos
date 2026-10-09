@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>河壩粄條｜客家麵食小吃</title>
+<meta name="description" content="河壩粄條：在地三十年客家粄條小吃，看今天有沒有開、菜單價格、外帶點餐傳 LINE。（範例作品）">
+<meta name="theme-color" content="#9c1712">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--
+THESIS: 小吃店最誠實的介面是門口那塊壓克力燈箱加一張點菜單——燈亮就是有開，菜單就是購物車。頂部跑馬燈即時播營業狀態，粗膠囊按鈕當導覽，菜單是一張可以直接填數量的點菜單。拒絕美食部落格式的大圖＋卡片官網。
+OWN-WORLD: 招牌紅滿版當底、當字、當按鈕；白色壓克力燈箱與紅色粗楷；點菜單的米白紙、藍色格線與手寫數量；霞鶩文楷粗體當招牌字，思源黑體當內文。
+STORY: 跑馬燈先告訴你現在開沒開 → 燈箱與巨大的狀態字確認 → 滑過一碗碗招牌 → 在點菜單上直接填數量 → 選取餐時間傳 LINE。
+FIRST VIEWPORT: 頂部紅黑跑馬燈；下方一排粗膠囊導覽；整面燈箱招牌；燈箱下面是巨大的「營業中／休息中」；手機右下角圓形外帶按鈕帶數量。
+FORM: 壓克力燈箱招牌 × 點菜單（rework：跑馬燈公告列 + 膠囊導覽 + 點菜單即購物車）；seed key b5bf161d。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<a class="skip" href="#menu">跳到菜單</a>
+
+<div class="ticker" aria-live="off">
+  <div class="ticker-track" id="ticker"><span>河壩粄條</span></div>
+</div>
+
+<nav class="pills" aria-label="主選單">
+  <a class="pill pill-brand" href="#top">河壩粄條</a>
+  <a class="pill" href="#signature">招牌</a>
+  <a class="pill" href="#menu">點菜單</a>
+  <a class="pill" href="#visit">交通</a>
+  <a class="pill" href="#reviews">評論</a>
+  <a class="pill pill-hot" href="#takeout">外帶</a>
+</nav>
+
+<main id="top">
+  <section class="hero">
+    <div class="sign" id="sign">
+      <div class="sign-face">
+        <h1 class="sign-name"><span>河</span><span>壩</span><span>粄</span><span>條</span></h1>
+        <p class="sign-items">客家手工粄條・米苔目・炒米粉・客家小炒・鹹湯圓</p>
+        <p class="sign-tel">外帶專線 03-5XX-0000（虛構）</p>
+      </div>
+      <div class="closed-note" id="closedNote" aria-hidden="true"><span>今日公休</span><small>明天見！</small></div>
+    </div>
+    <div class="status" id="status" role="status">
+      <p class="status-big" id="statusMain">確認中…</p>
+      <p class="status-sub" id="statusSub"></p>
+    </div>
+  </section>
+
+  <section id="signature" class="signature">
+    <h2 class="poster-h">一碗<br>一碗<br>端上桌</h2>
+    <ul class="bowls" id="rail"></ul>
+  </section>
+
+  <section id="menu" class="menu">
+    <div class="order-sheet">
+      <header class="sheet-head">
+        <h2>點菜單</h2>
+        <p>外帶直接填數量，下面會自動算好。<br>內用請到店跟老闆娘點。</p>
+      </header>
+      <div class="sheet-tabs" role="tablist" aria-label="菜單分類" id="tabs"></div>
+      <div class="sheet-cols" aria-hidden="true"><span>品名</span><span>價錢</span><span>數量</span></div>
+      <ul class="sheet-rows" id="menuList" role="tabpanel" tabindex="0"></ul>
+    </div>
+  </section>
+
+  <section id="takeout" class="takeout">
+    <div class="takeout-sum">
+      <h2>外帶</h2>
+      <ul class="tally" id="cart"></ul>
+      <p class="cart-empty" id="cartEmpty">點菜單上還沒填數量。</p>
+      <p class="total">合計 <strong id="total">NT$0</strong></p>
+    </div>
+    <form class="takeout-form" id="orderForm" novalidate>
+      <label>幾點來拿<select id="pickTime"></select></label>
+      <label>稱呼<input id="oName" autocomplete="name" placeholder="林先生"></label>
+      <label>手機<input id="oPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0912345678"></label>
+      <label>備註<input id="oNote" placeholder="不要香菜、湯分開裝（選填）"></label>
+      <p class="error" id="error" role="alert"></p>
+      <button class="btn-white" type="submit">產生外帶訂單</button>
+    </form>
+    <div class="result" id="result" hidden tabindex="-1">
+      <h3>訂單文字好了，傳給老闆娘</h3>
+      <pre id="resultText"></pre>
+      <div class="result-actions">
+        <button type="button" class="btn-ink" id="copyBtn">複製文字</button>
+        <a class="btn-line" id="lineBtn" href="#" target="_blank" rel="noopener">傳到 LINE</a>
+      </div>
+      <p class="copied" id="copied" role="status"></p>
+    </div>
+  </section>
+
+  <section id="visit" class="visit">
+    <div class="hours-board">
+      <h2>幾點開</h2>
+      <table><caption class="sr">每週營業時間</caption><tbody id="hoursBody"></tbody></table>
+      <div class="notice" id="notice">
+        <span class="pin" aria-hidden="true"></span>
+        <h3>公休公告</h3>
+        <ul id="noticeList"></ul>
+      </div>
+    </div>
+    <div class="map-col">
+      <h2>怎麼來</h2>
+      <div class="map-box" role="img" aria-label="地圖占位：店在老街口第二間，旁邊有廟埕停車場">
+        <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="260" fill="#f3e3cf"/>
+          <path d="M-10 160c80-20 150 10 230-10s120-40 190-30" stroke="#9cc3cf" stroke-width="26" fill="none"/>
+          <g stroke="#fff" stroke-width="16" fill="none" stroke-linecap="round"><path d="M40-10v280"/><path d="M-10 70h420"/><path d="M260-10l-30 280"/></g>
+          <rect x="62" y="84" width="60" height="40" rx="4" fill="#d9b48a"/><text x="92" y="109" text-anchor="middle" font-size="13" fill="#5b2b1a">廟埕 P</text>
+          <rect x="150" y="30" width="34" height="30" rx="3" fill="#c4211c"/><text x="167" y="50" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">河壩</text>
+          <text x="330" y="150" font-size="12" fill="#3f6f7d">河壩溪</text>
+        </svg>
+        <p class="map-label">地圖占位・正式版嵌入 Google 地圖</p>
+      </div>
+      <address>新竹縣某某鎮河壩老街 18 號（虛構地址）</address>
+      <ul class="how">
+        <li><strong>開車</strong>廟埕停車場免費，走過來一分鐘</li>
+        <li><strong>公車</strong>「河壩老街」站下車就到</li>
+        <li><strong>騎車</strong>騎樓下可以停，別擋到隔壁</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="reviews" class="reviews">
+    <div class="rating">
+      <strong>4.6</strong>
+      <span class="stars" id="avgStars" role="img" aria-label="五顆星中的 4.6 顆"></span>
+      <span>Google 評論 512 則・<em>以下為範例假資料</em></span>
+    </div>
+    <ul class="bubbles" id="reviewList"></ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <p class="foot-tel"><small>外帶專線</small>03-5XX-0000</p>
+  <p class="foot-demo">新竹縣某某鎮河壩老街 18 號・本頁為<strong>範例作品</strong>：店名、地址、電話、價格與評論皆為虛構。</p>
+  <p class="foot-name" aria-hidden="true">河壩粄條</p>
+</footer>
+
+<a class="fab" href="#takeout" aria-label="外帶點餐"><span>外帶</span><b id="dockCount" hidden>0</b><span class="sr" id="dockTotal"></span></a>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>慢郵局｜海邊民宿與共享空間</title>
+<meta name="description" content="慢郵局：台東海邊老郵局改建的小民宿與共享工作室。看房型、查空房、自動試算價格，一鍵傳 LINE 詢問。（範例作品）">
+<meta name="theme-color" content="#17323d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+Hei+HK:wght@400;500;700;900&family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--
+THESIS: 旅行最後留下來的是一張明信片；每個房型就是一張可翻面的明信片，正面是風景、背面寫設備與價格，選好日期就蓋上郵戳。拒絕「大圖輪播＋白色房型卡」的訂房模板。
+OWN-WORLD: 深海藍與霧天藍兩種滿版色塊交替、航空信紅藍斜紋、郵票齒孔、藍色圓形郵戳；Chiron Hei HK 粗黑大標被畫面邊緣切掉，霞鶩文楷當手寫背面。
+STORY: 旅人先感受到海，翻看房間正反面，在月曆蓋上入住退房戳，看見價格自己算好，然後傳 LINE 詢問。
+FIRST VIEWPORT: 滿版海景插畫，巨大標題「慢慢寄到海邊」溢出右緣被切掉；一張帶郵票與今日郵戳的小明信片壓在左下；主按鈕「查空房」；手機底部固定詢問列。
+FORM: 明信片與郵戳（rework：左側直排導覽 + 手機 app 式分頁列 + 房型橫向翻閱 + 海岸插畫頁尾）；seed key 50bc0ade。Raise（Metro 磁磚）：大字被畫面切掉、色塊本身就是內容。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<a class="skip" href="#rooms">跳到房型</a>
+
+<nav class="side" aria-label="主選單">
+  <a class="side-brand" href="#top"><span class="side-stamp" aria-hidden="true"></span><b>慢郵局</b><small>長濱・海邊民宿</small></a>
+  <a href="#rooms">房型</a>
+  <a href="#calendar">空房</a>
+  <a href="#rules">須知</a>
+  <a href="#faq">問答</a>
+  <a href="#ask" class="side-cta">寫信詢問</a>
+  <p class="side-foot">台東縣長濱鄉某某路 1 號（虛構）<br>入住 15:00・退房 11:00</p>
+</nav>
+<a class="mob-brand" href="#top">慢郵局</a>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-scene" id="heroScene" aria-hidden="true"></div>
+    <h1 class="hero-title"><span>慢慢寄到</span><span>海邊<span class="stop">。</span></span></h1>
+    <div class="hero-card">
+      <div class="postcard-mini">
+        <p>台東長濱，一間老郵局改成的四間房。<br>白天聽海，晚上看星，信可以慢慢寫。</p>
+        <span class="stamp-mini" aria-hidden="true"></span>
+        <span class="postmark" id="heroMark" aria-hidden="true"></span>
+      </div>
+      <a class="btn btn-red" href="#calendar">查空房</a>
+    </div>
+  </section>
+
+  <section id="rooms" class="rooms">
+    <h2 class="crop-title">四種寄法</h2>
+    <div class="rooms-bar">
+      <p class="lead">往左滑翻下一張，點「看背面」看設備與價格。插畫為示意，非實景照片。</p>
+      <div class="track-arrows">
+        <button type="button" class="icon-btn" id="trackPrev" aria-label="上一個房型"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></button>
+        <button type="button" class="icon-btn" id="trackNext" aria-label="下一個房型"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></button>
+      </div>
+    </div>
+    <div class="room-list" id="roomList"></div>
+  </section>
+
+  <section id="calendar" class="cal-section">
+    <h2 class="crop-title on-dark">蓋上日期</h2>
+    <div class="cal-wrap">
+      <div class="cal-side">
+        <label>房型
+          <select id="roomSelect"></select>
+        </label>
+        <p class="legend"><span class="lg lg-free"></span>可預約<span class="lg lg-full"></span>已滿<span class="lg lg-pick"></span>你的日期</p>
+        <div class="quote" id="quote" aria-live="polite"></div>
+      </div>
+      <div class="cal">
+        <div class="cal-head">
+          <button type="button" id="prevMonth" aria-label="上個月"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></button>
+          <h3 id="monthLabel"></h3>
+          <button type="button" id="nextMonth" aria-label="下個月"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></button>
+        </div>
+        <div class="cal-dow" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="選擇入住與退房日期"></div>
+        <p class="cal-tip" id="calTip">先點入住日，再點退房日。</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="spread">
+  <section id="rules" class="rules">
+    <h2 class="note-title">入住須知</h2>
+    <ol class="rule-list">
+      <li><strong>入住 15:00 後・退房 11:00 前</strong>行李可以提早寄放在櫃檯。</li>
+      <li><strong>全館禁菸</strong>院子有一張長椅可以抽菸，請把菸蒂帶走。</li>
+      <li><strong>22:00 後請放輕聲音</strong>我們和鄰居住得很近，海浪聲已經夠熱鬧了。</li>
+      <li><strong>寵物需事先詢問</strong>中小型犬可入住「包裹」家庭房，加收清潔費 NT$500。</li>
+      <li><strong>訂金與取消</strong>確認後匯 30% 訂金；入住 7 天前取消全額退還，3 天內取消不退。</li>
+    </ol>
+  </section>
+  <section id="faq" class="faq">
+    <h2 class="note-title">常見問題</h2>
+    <div class="faq-list">
+      <details><summary>附近有東西吃嗎？</summary><p>步行 5 分鐘有雜貨店和兩間小吃店，晚上 8 點後選擇不多，建議先買好。早餐由我們準備，是當天的手作三明治與咖啡。</p></details>
+      <details><summary>沒有開車怎麼到？</summary><p>可搭台鐵到台東站，轉乘海線公車約 1 小時 20 分，在「長濱郵局」站下車。提前告訴我們班次，可以到站牌接你。</p></details>
+      <details><summary>共享空間可以只租半天嗎？</summary><p>可以。「分信室」平日半天（4 小時）NT$1,400，含投影、白板與無限咖啡，適合小型讀書會或工作坊。</p></details>
+      <details><summary>可以帶小孩嗎？</summary><p>可以，6 歲以下不佔床免費，提供兒童餐具與澡盆。閣樓單人房樓梯較陡，不建議帶小小孩入住。</p></details>
+      <details><summary>颱風天怎麼辦？</summary><p>中央氣象署發布陸上颱風警報、或台東縣停班停課時，可以免費改期一次，訂金保留半年。</p></details>
+    </div>
+  </section>
+  </div>
+
+  <section id="ask" class="ask">
+    <h2 class="crop-title on-dark">寫信給我們</h2>
+    <form class="letter" id="askForm" novalidate>
+      <p class="letter-to">親愛的慢郵局：</p>
+      <div class="letter-fields">
+        <label>你的名字<input id="aName" autocomplete="name" placeholder="例：陳小姐"></label>
+        <label>手機<input id="aPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0912345678"></label>
+        <label>人數
+          <select id="aGuests"></select>
+        </label>
+        <label>想住的房型與日期<output id="aPick" class="pick-out">還沒蓋日期，請到上方月曆選</output></label>
+        <label class="wide">想說的話（選填）<textarea id="aMsg" rows="3" placeholder="例：會帶一隻柴犬、想問有沒有停車位"></textarea></label>
+      </div>
+      <p class="error" id="error" role="alert"></p>
+      <button class="btn btn-red" type="submit">寄出詢問（產生文字）</button>
+    </form>
+    <div class="result" id="result" hidden tabindex="-1">
+      <h3>信寫好了</h3>
+      <pre id="resultText"></pre>
+      <div class="result-actions">
+        <button type="button" class="btn btn-ink" id="copyBtn">複製文字</button>
+        <a class="btn btn-line" id="lineBtn" href="#" target="_blank" rel="noopener">傳到 LINE</a>
+      </div>
+      <p class="copied" id="copied" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="coast" id="coast" aria-hidden="true"></div>
+  <div class="foot-card">
+    <div class="foot-msg">
+      <p class="foot-hello">到了再寫信給我們，<br>或者，先寫一封。</p>
+      <p class="foot-demo">本頁為<strong>範例作品</strong>：店名、地點、房價與空房狀態皆為虛構示範。</p>
+    </div>
+    <address class="foot-addr">
+      <span>慢郵局 收</span>
+      <span>台東縣長濱鄉某某路 1 號（虛構）</span>
+      <span class="zip" aria-label="郵遞區號 962"><i>9</i><i>6</i><i>2</i></span>
+    </address>
+  </div>
+</footer>
+
+<p class="quote-chip" id="dockInfo" hidden></p>
+<nav class="tabbar" aria-label="快速選單">
+  <a href="#rooms"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 15l5-5 4 4 3-3 6 6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>房型</span></a>
+  <a href="#calendar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8"/><circle cx="15" cy="15" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>空房</span></a>
+  <a href="#rules"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 11h7M9 15h7" stroke="currentColor" stroke-width="1.8"/></svg><span>須知</span></a>
+  <a href="#calendar" class="tab-main" id="dockBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 7l9 7 9-7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span id="dockLabel">查空房</span></a>
+</nav>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小磁鐵手作教室｜親子與成人手作課程</title>
+<meta name="description" content="小磁鐵手作教室：親子黏土、成人陶土、刺繡與包場派對。看剩餘名額、線上報名，一鍵傳 LINE。（範例作品）">
+<meta name="theme-color" content="#c9ece1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--
+THESIS: 小孩上完手作課，作品最後都去了同一個地方——家裡的冰箱門；整頁是一扇冰箱門，課程是磁鐵壓住的紙卡，作品牆就是貼滿畫的冰箱。拒絕彩虹色塊＋卡通圖示的才藝班模板。
+OWN-WORLD: 薄荷琺瑯冰箱門、鍍鉻把手；番茄紅、鈷藍、向日葵黃、草綠四個飽和色以 multiply 疊印出第五色；圓形磁鐵與投影；粉圓體標題、思源黑體內文；額滿蓋紅色橡皮章。
+STORY: 家長看到孩子作品會被好好收藏，篩選親子/成人/包場，看剩餘名額，報名，看到確認畫面並傳 LINE。
+FIRST VIEWPORT: 冰箱門頂端圓角，三張小孩的畫被磁鐵吸上門，粉圓大標「把作品貼上冰箱的那一天」，主按鈕「找課程報名」；手機底部固定報名列。
+FORM: 冰箱門上的畫（rework：磁鐵導覽 + bento 課程格 + 底部磁鐵托盤 + 手寫頁尾）；seed key 1887616d。Raise（絲綢色和弦）：只用 4 個飽和色，疊在一起才出現第 5 色，滿而不雜。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<a class="skip" href="#courses">跳到課程</a>
+
+<nav class="magnets" aria-label="主選單">
+  <a class="mag mag-brand" href="#top"><span>小磁鐵</span><small>手作教室</small></a>
+  <a class="mag mag-blue" href="#courses">課程</a>
+  <a class="mag mag-yellow" href="#space">場地</a>
+  <a class="mag mag-green" href="#wall">作品</a>
+  <a class="mag mag-red" href="#signup">報名</a>
+</nav>
+
+<main id="top" class="fridge">
+  <span class="handle" aria-hidden="true"></span>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>把作品<br>貼上冰箱的<br>那一天。</h1>
+      <p>給 4 歲以上的小孩，也給想重新玩起來的大人。每班最多 8 組，老師會蹲下來，一個一個教。</p>
+      <a class="btn btn-red" href="#courses">找課程報名</a>
+    </div>
+    <div class="hero-board" aria-label="學員畫作（示意插畫）" role="img">
+      <div class="art art-a" id="heroA"><span class="magnet m-blue"></span></div>
+      <div class="art art-b" id="heroB"><span class="magnet m-yellow"></span></div>
+      <div class="art art-c" id="heroC"><span class="magnet m-green"></span></div>
+    </div>
+  </section>
+
+  <section id="courses" class="courses">
+    <div class="section-head">
+      <h2>這個月的課</h2>
+      <p>名額為示範資料。額滿的課可以傳 LINE 排候補。</p>
+    </div>
+    <div class="filters" role="group" aria-label="篩選課程" id="filters"></div>
+    <ul class="course-list" id="courseList" aria-live="polite"></ul>
+  </section>
+
+  <section id="signup" class="signup">
+    <div class="section-head">
+      <h2>報名</h2>
+      <p>填完會整理成一段文字，傳 LINE 給老師就完成；老師會回覆匯款資訊。</p>
+    </div>
+    <form class="signup-form" id="signupForm" novalidate>
+      <label class="wide">課程
+        <select id="sCourse"></select>
+      </label>
+      <label>人數 <span class="hint" id="seatHint"></span>
+        <select id="sCount"></select>
+      </label>
+      <label>聯絡人姓名
+        <input id="sName" autocomplete="name" placeholder="例：王媽媽" aria-describedby="eName">
+        <span class="field-err" id="eName"></span>
+      </label>
+      <label>手機
+        <input id="sPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0912345678" aria-describedby="ePhone">
+        <span class="field-err" id="ePhone"></span>
+      </label>
+      <label>Email（選填）
+        <input id="sEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" aria-describedby="eEmail">
+        <span class="field-err" id="eEmail"></span>
+      </label>
+      <label class="wide">備註（選填）
+        <textarea id="sNote" rows="2" placeholder="例：小孩 5 歲，對黏土有點過敏要戴手套"></textarea>
+      </label>
+      <div class="form-foot wide">
+        <p class="total-line">費用 <strong id="sTotal">NT$0</strong></p>
+        <button class="btn btn-red" type="submit">送出報名</button>
+      </div>
+    </form>
+
+    <div class="confirm" id="confirm" hidden tabindex="-1">
+      <span class="ok-stamp" aria-hidden="true">收到</span>
+      <h3><span>報名資料</span><span>整理好了！</span></h3>
+      <p>最後一步：把下面這段文字傳到 LINE 給老師，收到回覆才算完成報名。</p>
+      <pre id="confirmText"></pre>
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-ink" id="copyBtn">複製文字</button>
+        <a class="btn btn-line" id="lineBtn" href="#" target="_blank" rel="noopener">傳到 LINE</a>
+        <button type="button" class="btn btn-ghost" id="againBtn">再報一堂</button>
+      </div>
+      <p class="copied" id="copied" role="status"></p>
+    </div>
+  </section>
+
+  <section id="space" class="space">
+    <div class="section-head">
+      <h2>場地租借</h2>
+      <p>教室 12 坪、兩張大長桌、一個洗手台。工具與圍裙都可以借。</p>
+    </div>
+    <div class="plans">
+      <article class="plan plan-yellow">
+        <h3>半天包場</h3>
+        <p class="plan-price">NT$2,400<small>／4 小時</small></p>
+        <ul><li>最多 16 人</li><li>桌椅、洗手台、投影</li><li>適合讀書會、小型工作坊</li></ul>
+      </article>
+      <article class="plan plan-blue">
+        <h3>整天包場</h3>
+        <p class="plan-price">NT$4,200<small>／9 小時</small></p>
+        <ul><li>最多 16 人</li><li>含烤箱與窯燒一次</li><li>適合公司內訓、市集備貨</li></ul>
+      </article>
+      <article class="plan plan-red">
+        <h3>生日派對</h3>
+        <p class="plan-price">NT$6,800<small>起／3 小時</small></p>
+        <ul><li>10 位小朋友＋家長</li><li>老師帶一堂手作＋佈置</li><li>作品當天帶回家</li></ul>
+      </article>
+    </div>
+    <a class="link-btn" href="#signup" id="spaceAsk">想包場？在報名表選「團體包場」</a>
+  </section>
+
+  <section id="wall" class="wall">
+    <div class="section-head">
+      <h2>學員作品牆</h2>
+      <p>經家長同意展示（此處為示意插畫）。</p>
+    </div>
+    <ul class="masonry" id="masonry"></ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <p class="foot-big">一起來<br>玩吧！</p>
+  <svg class="scribble" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 26c80-20 140 10 210-4s120-18 190 2 120-6 188-10" fill="none" stroke="#e8442e" stroke-width="9" stroke-linecap="round"/></svg>
+  <a class="btn btn-red foot-cta" href="#signup">我要報名</a>
+  <div class="foot-info">
+    <p><b>小磁鐵手作教室</b>　台北市某某區冰箱路 5 號 1 樓（虛構）</p>
+    <p>週二至週日 10:00–21:00・週一休息</p>
+    <p class="foot-demo">本頁為範例作品：店名、課程、名額、價格與學員作品皆為虛構。</p>
+  </div>
+</footer>
+
+<div class="tray">
+  <button type="button" class="tray-menu" id="trayBtn" aria-expanded="false" aria-controls="trayStack" aria-label="開啟選單"><i></i><i></i><i></i></button>
+  <div class="tray-stack" id="trayStack" hidden>
+    <a href="#courses" class="mag mag-blue">課程</a>
+    <a href="#space" class="mag mag-yellow">場地</a>
+    <a href="#wall" class="mag mag-green">作品</a>
+  </div>
+  <a class="tray-cta" href="#signup"><span>我要報名</span><small id="dockSeats">— 個名額</small></a>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

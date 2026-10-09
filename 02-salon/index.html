@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>鏡室 Mirror Room｜個人髮藝工作室預約</title>
+<meta name="description" content="鏡室 Mirror Room：一對一個人髮藝工作室，線上查看價目、作品與空檔，一鍵傳 LINE 預約。（範例作品）">
+<meta name="theme-color" content="#e4dee9">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK:ital,wght@0,400;0,600;0,800;1,400&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--
+THESIS: 工作室最重要的物件是那面鏡子，而介紹它的方式是一本髮型雜誌：置中刊頭、拆兩邊的目錄式導覽、橫向底片條作品、排版過的價目、訪談式的設計師頁。拒絕粉紅花朵＋圓角卡片的美容模板。
+OWN-WORLD: 霧紫灰紙面、單色拱形鏡框、深梅紫墨色、梅紅一個重點色；Chiron Sung HK 宋體當刊頭與大標、思源黑體內文；細線與點點引線。
+STORY: 打開雜誌封面 → 翻到價目 → 拉一排作品 → 讀兩位設計師的訪談 → 在預約卡上選時段傳 LINE。
+FIRST VIEWPORT: 置中刊頭「鏡室」兩邊分列導覽；封面是一面大拱鏡，宋體大標壓在鏡框上，旁邊是期數與今日空檔；手機右上膠囊開全螢幕選單、底部浮動「預約」膠囊。
+FORM: 沙龍鏡面工作台 × 髮型雜誌（rework：結構改為雜誌刊頭 + 全螢幕選單 + 底片條）；seed key 9fa69c37。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<a class="skip" href="#booking">跳到預約</a>
+
+<header class="masthead">
+  <nav class="mast-nav mast-left" aria-label="主選單左">
+    <a href="#services">價目</a>
+    <a href="#works">作品</a>
+  </nav>
+  <a class="mast-logo" href="#top"><span class="mast-zh">鏡室</span><span class="mast-en">Mirror Room · Hair Atelier</span></a>
+  <nav class="mast-nav mast-right" aria-label="主選單右">
+    <a href="#team">設計師</a>
+    <a href="#booking" class="mast-cta">預約</a>
+  </nav>
+  <button class="menu-pill" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">選單</button>
+</header>
+
+<div class="menu" id="menu" hidden>
+  <nav aria-label="全螢幕選單">
+    <a href="#services">價目</a>
+    <a href="#works">作品</a>
+    <a href="#team">設計師</a>
+    <a href="#booking">預約</a>
+    <a href="#visit">交通</a>
+  </nav>
+  <p class="menu-foot">台中市西區霧鏡路 88 巷 3 號 2 樓（虛構）<br>週三公休</p>
+</div>
+
+<main id="top">
+  <section class="cover">
+    <p class="cover-meta"><span>Vol. 10</span><span>秋冬・短髮特輯</span></p>
+    <div class="cover-mirror mirror" aria-hidden="true">
+      <div class="mirror-glass">
+        <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMax slice">
+          <defs><linearGradient id="hp-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9d2e3"/><stop offset="1" stop-color="#b9adc8"/></linearGradient></defs>
+          <rect width="300" height="380" fill="url(#hp-bg)"/>
+          <path d="M70 380c4-60 34-92 80-92s76 32 80 92z" fill="#efe7e2"/>
+          <path d="M132 250h36v44h-36z" fill="#e5c9b8"/>
+          <ellipse cx="150" cy="190" rx="54" ry="68" fill="#efd6c6"/>
+          <path d="M84 250C76 150 100 96 150 96s74 54 66 154l-28 4c4-40 2-70-6-90H104c-6 20-8 52-4 86z" fill="#3a2a33"/>
+        </svg>
+      </div>
+    </div>
+    <h1 class="cover-title"><span>在鏡子前，</span><span>慢慢</span><span>變好看。</span></h1>
+    <div class="cover-side">
+      <p>兩張椅子、一次一位客人。從洗髮到吹整都是同一雙手，不趕時間、不推銷。</p>
+      <p class="today-line" id="todayLine">今天還有 <strong>—</strong> 個空檔</p>
+    </div>
+  </section>
+
+  <section id="services" class="services">
+    <header class="sec-head"><h2>價目</h2><p>含洗髮與吹整。過肩長髮依髮量另加 NT$200–500，現場確認後才施作。</p></header>
+    <div class="tabs" role="tablist" aria-label="服務分類" id="tabs"></div>
+    <div class="price-panel" role="tabpanel" id="pricePanel" tabindex="0"></div>
+  </section>
+
+  <section id="works" class="works">
+    <header class="sec-head"><h2>作品</h2><p>往左拉看更多，點一下放大。插畫為示意，非真人照片。</p></header>
+    <ul class="film" id="gallery"></ul>
+  </section>
+
+  <section id="team" class="team">
+    <h2 class="sr">設計師</h2>
+    <div id="teamGrid"></div>
+  </section>
+
+  <section id="booking" class="booking">
+    <form class="appt" id="bookForm" novalidate>
+      <header class="appt-head">
+        <p class="appt-brand">鏡室</p>
+        <h2>預約卡</h2>
+      </header>
+      <div class="appt-grid">
+        <div class="appt-col">
+          <label>服務<select id="fService"></select></label>
+          <fieldset class="seg"><legend>設計師</legend><div class="seg-row" id="fDesigner"></div></fieldset>
+          <fieldset class="seg"><legend>日期 <small>週三公休</small></legend><div class="date-strip" id="fDates"></div></fieldset>
+          <fieldset class="seg"><legend>時段 <small id="slotHint"></small></legend><div class="slots" id="fSlots"></div></fieldset>
+        </div>
+        <div class="appt-col appt-side">
+          <label>姓名<input id="fName" autocomplete="name" placeholder="陳小姐"></label>
+          <label>手機<input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0912345678"></label>
+          <label>想說的話<textarea id="fNote" rows="3" placeholder="想剪短，但保留可以綁的長度（選填）"></textarea></label>
+          <div class="book-summary" id="bookSummary" aria-live="polite"></div>
+          <p class="error" id="error" role="alert"></p>
+          <button class="btn-plum" type="submit">產生預約文字</button>
+        </div>
+      </div>
+      <p class="appt-note">灰色斜線是已被預約的時段（示範資料）。送出不會直接成立，會整理成文字傳 LINE 給我們確認。</p>
+    </form>
+    <div class="result" id="result" hidden tabindex="-1">
+      <h3>預約文字已整理好</h3>
+      <pre id="resultText"></pre>
+      <div class="result-actions">
+        <button type="button" class="btn-ink" id="copyBtn">複製文字</button>
+        <a class="btn-line" id="lineBtn" href="#" target="_blank" rel="noopener">傳到 LINE</a>
+      </div>
+      <p class="copied" id="copied" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<footer id="visit" class="foot">
+  <p class="foot-big">下次，<br>鏡子前見。</p>
+  <div class="foot-cols">
+    <div>
+      <h2>營業時間</h2>
+      <table><caption class="sr">每週營業時間</caption><tbody id="hoursBody"></tbody></table>
+    </div>
+    <div>
+      <h2>位置</h2>
+      <div class="map-box" role="img" aria-label="地圖占位：工作室位於捷運站出口步行約五分鐘">
+        <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="220" fill="#d6cfdd"/>
+          <g stroke="#ece8f0" stroke-width="12" fill="none"><path d="M-10 60h420"/><path d="M-10 170h420"/><path d="M110-10v240"/><path d="M290-10v240"/></g>
+          <path d="M130 60h80v50h30" stroke="#8a4f6b" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round" fill="none"/>
+          <circle cx="110" cy="60" r="16" fill="#8a4f6b"/><text x="110" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">M</text>
+          <path d="M240 96c0-14 22-14 22 0 0 12-11 24-11 24s-11-12-11-24z" fill="#2d2433"/><circle cx="251" cy="96" r="4" fill="#fff"/>
+        </svg>
+        <p class="map-label">地圖占位・正式版嵌入 Google 地圖</p>
+      </div>
+      <address>台中市西區霧鏡路 88 巷 3 號 2 樓（虛構地址）<br>捷運某某站 2 號出口步行 5 分鐘</address>
+    </div>
+  </div>
+  <p class="foot-demo"><span>鏡室 Mirror Room</span><span>範例作品：店名、人物、價格、地址與預約狀況皆為虛構。</span></p>
+</footer>
+
+<a class="float-pill" href="#booking" id="floatPill"><span id="dockInfo">預約空檔</span></a>
+
+<dialog class="lightbox" id="lightbox" aria-label="作品放大檢視">
+  <button class="lb-close" type="button" id="lbClose" aria-label="關閉"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2"/></svg></button>
+  <div class="lb-frame mirror"><div class="mirror-glass" id="lbArt"></div></div>
+  <p class="lb-caption" id="lbCaption"></p>
+  <div class="lb-nav">
+    <button type="button" id="lbPrev" aria-label="上一張"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
+    <span id="lbCount"></span>
+    <button type="button" id="lbNext" aria-label="下一張"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
+  </div>
+</dialog>
+
+<script src="script.js"></script>
+</body>
+</html>

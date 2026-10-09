@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>暦菓子室｜預約制手作甜點</title>
+<meta name="description" content="暦菓子室：預約制手作甜點工作室，線上選品項與取貨日，一鍵傳到 LINE 完成預購。（範例作品）">
+<meta name="theme-color" content="#5a2e24">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--
+THESIS: 預購的核心是「哪一天拿」。整頁是一本日めくり撕頁日曆：往下捲就是一頁頁撕下來，導覽是活頁夾的直排索引標籤，購物單是從底部拉起的一張預購單。拒絕頂部導覽列＋商品格線＋購物車側欄。
+OWN-WORLD: 栗子棕牆面、白色日曆紙與鋸齒撕邊、紅色週日週一、朱紅印章按鈕、直排書寫；Anton 大數字、霞鶩文楷手寫、思源黑體內文。
+STORY: 第一頁看到最早能拿的日子 → 撕下一頁讀到一人工作室 → 再撕一頁讀到三條規矩 → 挑菓子蓋章 → 在整月月曆圈一天 → 拉起預購單傳 LINE。
+FIRST VIEWPORT: 牆上一本撕頁日曆，整頁高的 Anton 數字是最早取貨日；左上角朱印店章；手機底部露出預購單把手；電腦右緣是直排索引標籤。
+FORM: 日めくり撕頁日曆（rework：結構改為 sticky 疊頁 + 直排索引 + 底部抽屜）；seed key fad248e2。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<a class="skip" href="#kashi">跳到菓子清單</a>
+
+<a class="seal" href="#top" aria-label="暦菓子室 回到第一頁"><span>暦</span><span>菓子室</span></a>
+
+<nav class="tabs" aria-label="索引">
+  <a href="#kashi" class="tab tab-a"><span>今月の菓子</span></a>
+  <a href="#koyomi" class="tab tab-b"><span>取貨日</span></a>
+  <a href="#studio" class="tab tab-c"><span>工作室</span></a>
+  <a href="#slip" class="tab tab-d" id="tabSlip"><span>預購單</span><b id="tabCount" hidden>0</b></a>
+</nav>
+
+<main id="top">
+  <div class="stack">
+    <section class="page page-1" aria-labelledby="p1">
+      <p class="wall-word wall-left" aria-hidden="true">暦菓子室</p>
+      <p class="wall-word wall-right" aria-hidden="true">一天二十盒・三天前預約</p>
+      <div class="sheet">
+        <p class="sheet-top"><span id="heroYM">2026 · 十月</span><span>暦菓子室・預約制</span></p>
+        <h1 id="p1" class="sr">暦菓子室 預約制手作菓子</h1>
+        <p class="big-num" id="heroNum" aria-hidden="true">13</p>
+        <p class="big-dow" id="heroDow">週二</p>
+        <p class="big-note">這是現在能預約的<strong>最早取貨日</strong></p>
+        <a class="stamp-btn" href="#kashi">先挑菓子</a>
+      </div>
+    </section>
+
+    <section class="page page-2" id="studio" aria-labelledby="p2">
+      <div class="sheet sheet-letter">
+        <p class="sheet-top"><span>工作室的事</span><span>一</span></p>
+        <h2 id="p2">一個人，<br>一張工作檯。</h2>
+        <p>予晴在日本讀了兩年製菓專門學校，每天清晨五點跟著老師秤麵粉。畢業那天老師只說了一句：「好的菓子，是記得季節的菓子。」</p>
+        <p>回台灣後，她在大安的巷子裡租了一間小廚房。沒有櫥窗，也不現場賣——每一盒都在你預約的那天早上出爐。</p>
+      </div>
+    </section>
+
+    <section class="page page-3" aria-labelledby="p3">
+      <div class="sheet sheet-list">
+        <p class="sheet-top"><span>三條規矩</span><span>二</span></p>
+        <h2 id="p3" class="sr">預約規矩</h2>
+        <ol class="rules">
+          <li><span class="r-num">3</span><p>請在三天前告訴我。奶油要回溫，麵團要睡一晚。</p></li>
+          <li><span class="r-num">20</span><p>一天最多做二十盒，再多我就顧不好每一顆了。</p></li>
+          <li><span class="r-num red">日・月</span><p>週日、週一休息，那兩天我去市場找新的季節。</p></li>
+        </ol>
+        <p class="sign">— 予晴</p>
+      </div>
+    </section>
+  </div>
+
+  <section id="kashi" class="kashi" aria-labelledby="kashiTitle">
+    <h2 id="kashiTitle" class="vtitle">今月の菓子</h2>
+    <p class="kashi-lead">十月是栗子和焙茶。按朱印就放進預購單，價格都含包裝。</p>
+    <ol class="shelf" id="products"></ol>
+  </section>
+
+  <section id="koyomi" class="koyomi" aria-labelledby="koyomiTitle">
+    <div class="wall-cal">
+      <div class="wall-cal-head">
+        <h2 id="koyomiTitle">圈一天來拿</h2>
+        <p>只能預約三天後。紅色是週日、週一，休息。</p>
+      </div>
+      <div class="month" id="month"></div>
+      <fieldset class="how">
+        <legend>怎麼拿</legend>
+        <label class="ticket"><input type="radio" name="method" value="store" checked><span><b>到店取貨</b><small>大安區暦町巷 12 號（虛構）・12:00–18:00</small></span></label>
+        <label class="ticket"><input type="radio" name="method" value="meet"><span><b>捷運面交</b><small>文湖線三站擇一・滿 NT$600</small></span></label>
+        <div class="meet" id="meetBox" hidden>
+          <label>地點<select id="meetSpot"><option>科技大樓站 1 號出口</option><option>大安站 6 號出口</option><option>忠孝復興站 2 號出口</option></select></label>
+          <label>時間<select id="meetTime"><option>13:00</option><option>15:00</option><option>17:30</option></select></label>
+        </div>
+      </fieldset>
+    </div>
+  </section>
+</main>
+
+<aside class="slip" id="slip" aria-labelledby="slipTitle">
+  <button class="slip-handle" id="slipHandle" type="button" aria-expanded="false" aria-controls="slipBody">
+    <span class="grip" aria-hidden="true"></span>
+    <span class="slip-sum"><b id="slipTitle">預購單</b><span id="slipMeta">還沒挑菓子</span></span>
+    <strong id="slipTotal">NT$0</strong>
+  </button>
+  <div class="slip-body" id="slipBody">
+    <div class="slip-date">
+      <span class="slip-label">取貨日</span>
+      <span class="slip-day" id="slipDay">還沒圈</span>
+    </div>
+    <ul class="cart" id="cart"></ul>
+    <p class="cart-empty" id="cartEmpty">還沒有菓子。到「今月の菓子」按朱印。</p>
+    <div class="fields">
+      <label>稱呼<input id="cName" autocomplete="name" placeholder="王小姐"></label>
+      <label>手機<input id="cPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0912345678"></label>
+      <label class="wide">備註<textarea id="cNote" rows="2" placeholder="生日蠟燭一支（選填）"></textarea></label>
+    </div>
+    <p class="error" id="error" role="alert"></p>
+    <button class="seal-submit" id="makeOrder" type="button">蓋章，產生預購單</button>
+    <div class="result" id="result" hidden tabindex="-1">
+      <p class="result-stamp" aria-hidden="true">受付</p>
+      <pre id="orderText"></pre>
+      <div class="result-actions">
+        <button class="btn-ink" id="copyBtn" type="button">複製文字</button>
+        <a class="btn-line" id="lineBtn" href="#" target="_blank" rel="noopener">傳到 LINE</a>
+      </div>
+      <p class="copied" id="copied" role="status"></p>
+    </div>
+  </div>
+</aside>
+
+<footer class="foot">
+  <div class="foot-info">
+    <p><b>暦菓子室</b>　預約制手作菓子</p>
+    <p>台北市大安區暦町巷 12 號（虛構地址）<br>取貨 週二至週六 12:00–18:00</p>
+    <p class="demo">範例作品：店名、人物、地址與價格皆為虛構，非真實店家。</p>
+  </div>
+  <p class="foot-glyph" aria-hidden="true">暦</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

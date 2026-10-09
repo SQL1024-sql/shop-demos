@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小店網站範例｜SQL1024</title>
+<meta name="description" content="五家虛構小店的手機網站範例：甜點預購、髮廊預約、小吃外帶、民宿訂房、手作報名，最後都接到 LINE。">
+<meta name="theme-color" content="#e8e4dd">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+Hei+HK:wght@500;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --desk: #e8e4dd; --ink: #1c1a17; --soft: #5f5a52; --line: #cfc9bf; --gutter: clamp(16px, 4vw, 56px); }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--desk); color: var(--ink); font: clamp(15px, 1rem + .15vw, 17px)/1.75 "Noto Sans TC", system-ui, sans-serif; overflow-x: hidden; }
+  ::selection { background: var(--ink); color: var(--desk); }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+  header { padding: clamp(40px, 8vw, 96px) var(--gutter) clamp(28px, 4vw, 48px); max-width: 1400px; margin: 0 auto; }
+  h1 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(2.6rem, 9vw, 6.4rem); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+  header p { margin: 18px 0 0; max-width: 34em; color: var(--soft); }
+  .row { list-style: none; margin: 0; padding: 8px var(--gutter) 40px; display: flex; gap: clamp(18px, 2.4vw, 32px); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: var(--soft) transparent; }
+  @media (min-width: 1240px) { .row { max-width: 1400px; margin: 0 auto; overflow: visible; } }
+  .shop { flex: 0 0 min(72vw, 250px); scroll-snap-align: start; display: grid; gap: 14px; align-content: start; }
+  @media (min-width: 1240px) { .shop { flex: 1 1 0; } }
+  .phone { display: block; border-radius: 30px; padding: 8px; background: var(--ink); box-shadow: 0 26px 40px -22px rgba(28,26,23,.7); transition: transform .5s cubic-bezier(.16,1,.3,1); }
+  .phone img { display: block; width: 100%; height: auto; aspect-ratio: 390 / 844; border-radius: 22px; }
+  .shop:nth-child(odd) .phone { transform: rotate(-1.5deg); }
+  .shop:nth-child(even) .phone { transform: rotate(1.2deg) translateY(18px); }
+  .phone:hover, .phone:focus-visible { transform: rotate(0) translateY(-6px); }
+  .shop h2 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.35rem; margin: 18px 0 0; line-height: 1.3; }
+  .shop h2 small { display: block; font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: .8rem; color: var(--soft); }
+  .shop p { margin: 0; color: var(--soft); font-size: .92rem; }
+  .open { justify-self: start; min-height: 44px; display: inline-flex; align-items: center; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--ink); color: var(--ink); text-decoration: none; font-weight: 700; font-size: .92rem; transition: background-color .2s, color .2s; }
+  .open:hover { background: var(--ink); color: var(--desk); }
+  footer { max-width: 1400px; margin: 0 auto; padding: 28px var(--gutter) 40px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; color: var(--soft); font-size: .86rem; }
+  @media (prefers-reduced-motion: reduce) { .phone { transition: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>五家店，<br>五種接單方式。</h1>
+  <p>給在地小店的手機網站。客人在頁面上挑好、選好日期，最後一鍵把整理好的訂單傳到店家的 LINE，不需要後台、不用月費。每一家都可以點進去實際操作。</p>
+</header>
+
+<main>
+  <ul class="row">
+    <li class="shop">
+      <a class="phone" href="01-dessert/" aria-label="打開 暦菓子室 甜點預購"><img src="assets/01-dessert.jpg" alt="暦菓子室手機版首頁：撕頁日曆上寫著最早可取貨日" width="390" height="844" loading="lazy"></a>
+      <h2>暦菓子室<small>預約制甜點工作室</small></h2>
+      <p>挑菓子、在月曆圈取貨日，自動擋掉週日週一和三天內的日子。</p>
+      <a class="open" href="01-dessert/">打開看看</a>
+    </li>
+    <li class="shop">
+      <a class="phone" href="02-salon/" aria-label="打開 鏡室 髮廊預約"><img src="assets/02-salon.jpg" alt="鏡室手機版首頁：拱形鏡框裡的髮型插畫與宋體標題" width="390" height="844" loading="lazy"></a>
+      <h2>鏡室<small>個人髮廊・美容工作室</small></h2>
+      <p>看價目和作品，選設計師與空檔，已被預約的時段不能點。</p>
+      <a class="open" href="02-salon/">打開看看</a>
+    </li>
+    <li class="shop">
+      <a class="phone" href="03-hakka-noodles/" aria-label="打開 河壩粄條 小吃外帶"><img src="assets/03-hakka-noodles.jpg" alt="河壩粄條手機版首頁：燈箱招牌與大大的營業中" width="390" height="844" loading="lazy"></a>
+      <h2>河壩粄條<small>客家麵食小吃</small></h2>
+      <p>依營業時間自動顯示有沒有開，點菜單直接填數量叫外帶。</p>
+      <a class="open" href="03-hakka-noodles/">打開看看</a>
+    </li>
+    <li class="shop">
+      <a class="phone" href="04-guesthouse/" aria-label="打開 慢郵局 民宿訂房"><img src="assets/04-guesthouse.jpg" alt="慢郵局手機版首頁：海邊黃昏與巨大的標題字" width="390" height="844" loading="lazy"></a>
+      <h2>慢郵局<small>海邊民宿・共享空間</small></h2>
+      <p>翻看房型明信片，在月曆選入住退房，價格自動算好。</p>
+      <a class="open" href="04-guesthouse/">打開看看</a>
+    </li>
+    <li class="shop">
+      <a class="phone" href="05-craft-studio/" aria-label="打開 小磁鐵手作教室 課程報名"><img src="assets/05-craft-studio.jpg" alt="小磁鐵手作教室手機版首頁：冰箱門上的小孩畫作" width="390" height="844" loading="lazy"></a>
+      <h2>小磁鐵手作教室<small>親子與成人手作課</small></h2>
+      <p>依親子、成人、包場篩選課程，看剩餘名額，額滿自動擋下。</p>
+      <a class="open" href="05-craft-studio/">打開看看</a>
+    </li>
+  </ul>
+</main>
+
+<footer>
+  <span>所有店名、人物、地址、價格與評論皆為虛構，非真實店家。</span>
+  <span>製作：SQL1024</span>
+</footer>
+</body>
+</html>
