@@ -61,13 +61,13 @@ svg { display: block; max-width: 100%; }
 .tabs { position: fixed; top: 0; right: 10px; z-index: 55; display: flex; gap: 4px; }
 .tab {
   display: grid; place-items: center; position: relative;
-  width: 46px; min-height: 64px; padding: 14px 0 10px; text-decoration: none;
+  width: 46px; min-height: 72px; padding: 22px 0 10px; transform: translateY(-8px); text-decoration: none;
   writing-mode: vertical-rl; font-family: var(--hand); font-weight: 700; font-size: .92rem; letter-spacing: .12em;
   color: var(--ink); border-radius: 0 0 6px 6px;
   box-shadow: 0 6px 12px -6px rgba(0,0,0,.55);
-  transition: padding .35s var(--ease);
+  transition: transform .35s var(--ease);
 }
-.tab:hover, .tab[aria-current="true"] { padding-top: 22px; }
+.tab:hover, .tab[aria-current="true"] { transform: translateY(0); }
 .tab-a { background: var(--memo); }
 .tab-b { background: var(--sakura); }
 .tab-c { background: var(--paper); }
@@ -81,8 +81,8 @@ svg { display: block; max-width: 100%; }
 }
 @media (min-width: 1024px) {
   .tabs { top: 50%; right: 0; transform: translateY(-50%); flex-direction: column; gap: 6px; }
-  .tab { width: 48px; min-height: 0; padding: 18px 0; border-radius: 6px 0 0 6px; transform: translateX(6px); transition: transform .35s var(--ease); }
-  .tab:hover, .tab[aria-current="true"] { transform: translateX(0); padding-top: 18px; }
+  .tab { width: 48px; min-height: 0; padding: 18px 0; border-radius: 6px 0 0 6px; transform: translateX(6px); }
+  .tab:hover, .tab[aria-current="true"] { transform: translateX(0); }
   .tab-d { display: grid; }
 }
 
