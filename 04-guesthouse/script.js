@@ -138,11 +138,18 @@ document.querySelectorAll('.room').forEach((room) => {
   dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
   room.querySelectorAll('[data-step]').forEach((b) => b.addEventListener('click', () => go((idx() + +b.dataset.step + dots.length) % dots.length)));
   room.querySelectorAll('[data-flip]').forEach((b) => b.addEventListener('click', () => {
-    const flipped = room.classList.toggle('flipped');
-    room.querySelector('.pc-back').setAttribute('aria-hidden', !flipped);
-    room.querySelector('.pc-front').setAttribute('aria-hidden', flipped);
-    room.querySelectorAll('.pc-tools [data-flip]').forEach((x) => { x.lastChild.textContent = flipped ? '翻回正面' : '看背面'; });
-    setTimeout(() => (flipped ? room.querySelector('.pick-room') : room.querySelector('.pc-tools .flip-btn')).focus({ preventScroll: true }), 450);
+    // 2D turn: squash to zero width, swap faces, open back up (cheaper than a 3D flip on phones)
+    const swap = () => {
+      const flipped = room.classList.toggle('flipped');
+      room.querySelector('.pc-back').setAttribute('aria-hidden', !flipped);
+      room.querySelector('.pc-front').setAttribute('aria-hidden', flipped);
+      room.querySelectorAll('.pc-tools [data-flip]').forEach((x) => { x.lastChild.textContent = flipped ? '翻回正面' : '看背面'; });
+      room.classList.remove('turning');
+      (flipped ? room.querySelector('.pick-room') : room.querySelector('.pc-tools .flip-btn')).focus({ preventScroll: true });
+    };
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return swap();
+    room.classList.add('turning');
+    setTimeout(swap, 220);
   }));
 });
 document.addEventListener('click', (e) => {

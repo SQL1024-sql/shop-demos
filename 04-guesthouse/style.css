@@ -61,7 +61,7 @@ svg { display: block; max-width: 100%; }
 .hero-title {
   font-weight: 900; font-size: clamp(5.4rem, 27vw, 16rem); line-height: .95; letter-spacing: -.02em;
   white-space: nowrap; margin-right: calc(-1 * var(--gutter) - 22vw);
-  text-shadow: 0 6px 30px rgba(10, 25, 35, .35);
+  text-shadow: 0 4px 14px rgba(10, 25, 35, .3);
   display: grid;
 }
 .hero-title span:last-child { padding-left: .5em; }
@@ -102,11 +102,11 @@ svg { display: block; max-width: 100%; }
 
 /* postcards */
 .room { perspective: 1600px; }
-.pc { display: grid; transition: transform .9s var(--ease); transform-style: preserve-3d; }
-.room.flipped .pc { transform: rotateY(180deg); }
-.pc-face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--card); box-shadow: var(--shadow); border-radius: 3px; position: relative; overflow: hidden; }
-.pc-back { transform: rotateY(180deg); display: grid; }
-.room.flipped .pc-front, .room:not(.flipped) .pc-back { visibility: hidden; transition: visibility 0s .45s; }
+.pc { display: grid; transition: transform .22s ease-in; }
+.room.turning .pc { transform: scaleX(0); }
+.pc-face { grid-area: 1 / 1; background: var(--card); box-shadow: var(--shadow); border-radius: 3px; position: relative; overflow: hidden; }
+.pc-back { display: grid; }
+.room.flipped .pc-front, .room:not(.flipped) .pc-back { visibility: hidden; }
 .room.flipped .pc-tools { visibility: hidden; }
 .slides { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; aspect-ratio: 4 / 5; overscroll-behavior-x: contain; }
 @media (min-width: 560px) { .slides { aspect-ratio: 3 / 2; } }
