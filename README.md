@@ -12,6 +12,12 @@
 | 慢郵局 | 民宿・共享空間詢問 | https://sql1024-sql.github.io/shop-demos/04-guesthouse/ |
 | 小磁鐵手作教室 | 親子與成人手作課程報名 | https://sql1024-sql.github.io/shop-demos/05-craft-studio/ |
 
+另外一個 3D 活動網站範例：
+
+| 作品 | 類型 | 網址 |
+|---|---|---|
+| PRISM NIGHT | 虛構光影展活動介紹（three.js） | https://sql1024-sql.github.io/shop-demos/06-prism-night/ |
+
 純 HTML / CSS / JavaScript，沒有後端、沒有 build 工具。
 
-所有店名、人物、地址、價格與評論皆為虛構，非真實店家。
+所有店名、活動、人物、地址、價格與評論皆為虛構，非真實店家。

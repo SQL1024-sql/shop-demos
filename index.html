@@ -34,6 +34,12 @@
   .shop p { margin: 0; color: var(--soft); font-size: .92rem; }
   .open { justify-self: start; min-height: 44px; display: inline-flex; align-items: center; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--ink); color: var(--ink); text-decoration: none; font-weight: 700; font-size: .92rem; transition: background-color .2s, color .2s; }
   .open:hover { background: var(--ink); color: var(--desk); }
+  .extra { max-width: 1400px; margin: 0 auto; padding: clamp(24px, 4vw, 48px) var(--gutter) clamp(40px, 6vw, 72px); border-top: 1px solid var(--line); display: grid; grid-template-columns: min(72vw, 250px) 1fr; gap: clamp(20px, 4vw, 56px); align-items: center; }
+  .extra .phone { transform: rotate(-1.5deg); }
+  .extra h2 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(1.6rem, 4vw, 2.6rem); line-height: 1.2; margin: 0 0 14px; }
+  .extra h2 small { display: block; font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: .9rem; color: var(--soft); margin-bottom: 6px; }
+  .extra p { margin: 0 0 18px; max-width: 30em; color: var(--soft); }
+  @media (max-width: 640px) { .extra { grid-template-columns: 1fr; } .extra .phone { max-width: 250px; } }
   footer { max-width: 1400px; margin: 0 auto; padding: 28px var(--gutter) 40px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; color: var(--soft); font-size: .86rem; }
   @media (prefers-reduced-motion: reduce) { .phone { transition: none; } }
 </style>
@@ -77,10 +83,18 @@
       <a class="open" href="05-craft-studio/">打開看看</a>
     </li>
   </ul>
+  <section class="extra">
+    <a class="phone" href="06-prism-night/" aria-label="打開 PRISM NIGHT 3D 活動網站"><img src="assets/06-prism-night.jpg" alt="PRISM NIGHT 手機版首頁：磁磚牆上的巨大 PRISM 字與玻璃三角" width="390" height="844" loading="lazy"></a>
+    <div>
+      <h2><small>另外做的：3D 活動網站</small>PRISM NIGHT</h2>
+      <p>虛構光影展的活動介紹頁。磁磚圓柱房間、會折射的玻璃三角、曲面螢幕作品輪播，捲動越快鏡頭越彎。用 three.js 寫在單一 HTML 檔，桌機手機都能看。</p>
+      <a class="open" href="06-prism-night/">打開看看</a>
+    </div>
+  </section>
 </main>
 
 <footer>
-  <span>所有店名、人物、地址、價格與評論皆為虛構，非真實店家。</span>
+  <span>所有店名、活動、人物、地址、價格與評論皆為虛構，非真實店家。</span>
   <span>製作：SQL1024</span>
 </footer>
 </body>

@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PRISM NIGHT 2026 — 稜鏡之夜</title>
+<meta name="description" content="一座不關燈的倉庫，兩個夜晚，12 件沉浸式光影作品。PRISM NIGHT 2026（虛構活動 demo）。">
+<meta name="theme-color" content="#05040b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Cpolygon points=%2250,10 92,84 8,84%22 fill=%22none%22 stroke=%22%238a5cff%22 stroke-width=%2210%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@800&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --bg:#05040b; --ink:#f1efff; --dim:#9a96c6; --soft:#cfcbf0; --line:rgba(241,239,255,.22);
+  --violet:#8a5cff; --cyan:#3ee8ff; --hl:#e8ff4a;
+  --display:"Unbounded","PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"PingFang TC","Microsoft JhengHei",monospace;
+  --sans:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  --gutter:clamp(16px,3.6vw,52px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;font-family:var(--sans);color:var(--ink)}
+body{touch-action:none;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;background:radial-gradient(120% 80% at 50% 50%,#160e38,var(--bg) 70%)}
+body.light{--ink:#16131f;--dim:#5f5a72;--soft:#2d2938;--line:rgba(22,19,31,.25)}
+.nogl body.light{background:#ece8e4}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s}
+#gl.on{opacity:1}
+
+/* ---------- loader: construction lines ---------- */
+#loader{position:fixed;inset:0;z-index:60;background:var(--bg);transition:opacity .35s,visibility .35s}
+#loader.out{opacity:0;visibility:hidden}
+#loader svg{position:absolute;inset:0;width:100%;height:100%}
+#loader .g{fill:none;stroke:rgba(241,214,226,.55);stroke-width:1;vector-effect:non-scaling-stroke;stroke-dasharray:3000;stroke-dashoffset:3000;animation:draw .9s cubic-bezier(.6,0,.2,1) forwards}
+#loader .g:nth-child(2n){animation-delay:.08s}#loader .g:nth-child(3n){animation-delay:.16s}
+#loader .logo{fill:none;stroke:#fff;stroke-width:3;vector-effect:non-scaling-stroke;stroke-dasharray:3000;stroke-dashoffset:3000;animation:draw .7s .35s cubic-bezier(.6,0,.2,1) forwards;filter:drop-shadow(0 0 6px rgba(255,200,230,.7))}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* ---------- chrome ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:clamp(12px,2.4vw,32px);padding:max(16px,env(safe-area-inset-top)) var(--gutter) 16px;color:var(--ink);transition:color .5s}
+.brand{white-space:nowrap;display:flex;align-items:center;gap:10px;font:800 13px/1 var(--display);letter-spacing:.08em}
+.brand svg{width:20px;height:20px}
+.nav-links{display:flex;gap:28px;margin:0 auto;font:400 12px/1 var(--mono);letter-spacing:.16em}
+.nav-links a{padding:8px 0;opacity:.75;transition:opacity .2s}
+.nav-links a:hover,.nav-links a[aria-current="true"]{opacity:1}
+.btn-contact{font:600 11px/1 var(--mono);letter-spacing:.14em;padding:11px 16px;border:1px solid currentColor;border-radius:999px;transition:background .2s,color .2s}
+.btn-contact:hover{background:var(--ink);color:var(--bg)}
+.sound{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%}
+.sound span{display:flex;align-items:flex-end;gap:2px;height:12px}
+.sound i{width:2px;height:3px;background:currentColor;opacity:.6}
+.sound[aria-pressed="true"] i{opacity:1;animation:eq .9s ease-in-out infinite alternate}
+.sound i:nth-child(2){animation-delay:-.3s}.sound i:nth-child(3){animation-delay:-.6s}.sound i:nth-child(4){animation-delay:-.15s}
+@keyframes eq{from{height:3px}to{height:12px}}
+
+.hud{position:fixed;top:78px;right:var(--gutter);z-index:30;width:150px;font:400 10px/1.5 var(--mono);letter-spacing:.08em;color:var(--dim);text-align:right;transition:opacity .5s,color .5s}
+.hud .q{color:var(--ink);letter-spacing:.04em;white-space:pre}
+.hud canvas{display:block;width:64px;height:64px;margin:10px 0 6px auto}
+.hud button{font:400 10px/1 var(--mono);letter-spacing:.08em;color:var(--dim);border-bottom:1px solid currentColor;padding-bottom:2px}
+.rail{position:fixed;left:var(--gutter);top:50%;transform:translateY(-50%);z-index:30;height:44vh;width:60px;font:400 9px/1 var(--mono);letter-spacing:.14em;color:var(--dim);transition:opacity .5s,color .5s}
+.rail::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--line)}
+.rail a{position:absolute;left:10px;transform:translateY(-50%);white-space:nowrap;padding:4px 0}
+.rail a::before{content:"";position:absolute;left:-10px;top:50%;width:6px;height:1px;background:currentColor}
+.rail a[aria-current="true"]{color:var(--ink)}
+.rail i{position:absolute;left:-2px;width:5px;height:18px;background:var(--ink);transform:translateY(-50%)}
+.js .hud,.js .rail{opacity:0}
+.ready .hud,.ready .rail{opacity:1}
+
+.soundbar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;align-items:center;gap:16px;padding:10px var(--gutter);padding-bottom:max(10px,env(safe-area-inset-bottom));font:400 11px/1.4 var(--mono);letter-spacing:.06em;color:var(--dim);border-top:1px solid var(--line);background:rgba(5,4,11,.55);backdrop-filter:blur(8px);transition:transform .5s cubic-bezier(.6,0,.2,1)}
+.light .soundbar{background:rgba(236,232,228,.75)}
+.soundbar.gone{transform:translateY(110%)}
+.soundbar p{margin-right:auto}
+.soundbar p::before{content:"●";color:var(--hl);margin-right:8px;font-size:8px;vertical-align:2px}
+.soundbar button{font:600 11px/1 var(--mono);letter-spacing:.08em;padding:9px 14px;border:1px solid var(--line);border-radius:999px;color:var(--ink)}
+.soundbar button:last-child{border:0;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- content blocks ---------- */
+.blk{position:fixed;inset:0;z-index:20;pointer-events:none;padding:calc(92px + env(safe-area-inset-top)) var(--gutter) calc(88px + env(safe-area-inset-bottom)) calc(var(--gutter) + 90px);display:flex;flex-direction:column;opacity:0;visibility:hidden;transition:opacity .45s,visibility 0s .45s}
+.blk.on{opacity:1;visibility:visible;transition:opacity .45s}
+.blk a,.blk button{pointer-events:auto}
+.rise{opacity:0;transform:translate3d(0,18px,0);transition:opacity .6s var(--d,0s),transform .7s var(--d,0s) cubic-bezier(.2,.7,.2,1)}
+.on .rise{opacity:1;transform:none}
+.late{opacity:0!important;transform:translate3d(0,18px,0)!important}
+.cta-in .late{opacity:1!important;transform:none!important}
+
+.eyebrow{font:400 11px/1.4 var(--mono);letter-spacing:.2em;color:var(--cyan);text-transform:uppercase}
+.light .eyebrow{color:#5b3dff}
+.h{font:800 clamp(30px,4.2vw,64px)/1.02 var(--display);letter-spacing:-.01em;margin:.3em 0 .35em}
+.lead{font-size:clamp(14px,1.15vw,17px);line-height:1.8;color:var(--soft);max-width:30em}
+.tag{display:inline-block;font:400 10px/1 var(--mono);letter-spacing:.06em;padding:5px 8px;border:1px solid var(--line);border-radius:3px;margin:0 6px 6px 0}
+.mark{display:inline-block;background:var(--hl);color:#111;font:600 10px/1 var(--mono);letter-spacing:.04em;padding:4px 6px}
+
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:.6em;height:48px;padding:0 24px;border-radius:999px;font:600 13px/1 var(--mono);letter-spacing:.12em;transition:transform .2s,box-shadow .2s,background .2s}
+.btn.primary{color:#07051a;background:linear-gradient(90deg,#b9a6ff,#fff 45%,#9ef3ff);box-shadow:0 0 0 1px rgba(255,255,255,.3),0 10px 40px rgba(138,92,255,.45)}
+.btn.primary:hover{transform:translateY(-2px)}
+.cta-in .btn.primary{animation:pulse 2.4s 1s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 1px rgba(255,255,255,.5),0 10px 60px rgba(158,243,255,.7)}}
+.btn.ghost{border:1px solid var(--line);background:rgba(10,8,30,.35);backdrop-filter:blur(6px)}
+.btn.ghost:hover{border-color:var(--ink)}
+
+#hero{justify-content:flex-end}
+#hero .h{font-size:clamp(34px,4.6vw,70px)}
+.news{position:absolute;right:var(--gutter);bottom:calc(88px + env(safe-area-inset-bottom));width:260px;font:400 11px/1.6 var(--mono);color:var(--dim)}
+.news b{display:block;color:var(--ink);font-weight:600;letter-spacing:.2em;margin-bottom:8px}
+.news li{list-style:none;padding:8px 0;border-top:1px solid var(--line)}
+.news span{display:block;color:var(--ink);font-family:var(--sans);font-size:12px}
+
+#works-in,#outro,#prog-in{justify-content:flex-end}
+#outro{align-items:center;text-align:center}
+.caps{position:relative;margin-top:auto;min-height:150px}
+.cap{position:absolute;left:0;bottom:0;max-width:560px;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .35s,transform .35s,visibility 0s .35s}
+.cap.cur{opacity:1;visibility:visible;transform:none;transition:opacity .35s .05s,transform .45s .05s}
+.cap .meta{font:400 11px/1 var(--mono);letter-spacing:.08em;margin-bottom:8px;display:flex;gap:10px;align-items:center}
+.cap h3{font:800 clamp(22px,2.4vw,36px)/1.1 var(--display);margin-bottom:6px}
+.cap .zh{font-size:13px;color:var(--soft);margin-bottom:10px}
+.more{position:absolute;right:var(--gutter);bottom:calc(92px + env(safe-area-inset-bottom));font:600 11px/1 var(--mono);letter-spacing:.12em;border-bottom:1px solid currentColor;padding-bottom:4px}
+
+#vision{justify-content:center}
+.outline{font:800 clamp(52px,9.5vw,160px)/1 var(--display);color:transparent;-webkit-text-stroke:1.4px var(--ink);letter-spacing:-.01em}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:4vw;align-items:end;margin-top:4vh}
+.hl{font:700 clamp(20px,2.3vw,34px)/1.55 var(--sans);text-align:right}
+.hl .c{background:#14111c;color:#fff;padding:.04em 0;opacity:0;transition:opacity .12s}
+.hl .c.v{opacity:1}
+.vtxt p{font-size:14px;line-height:1.9;color:var(--soft);max-width:28em}
+.vtxt p+p{font:400 11px/1.7 var(--mono);color:var(--dim);margin-top:12px}
+
+#program{align-items:flex-end}
+.items{position:relative;width:min(420px,38vw);margin-top:auto;margin-bottom:auto;min-height:340px}
+.item{position:absolute;inset:0;opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .4s,transform .45s,visibility 0s .4s}
+.item.cur{opacity:1;visibility:visible;transform:none;transition:opacity .4s .05s,transform .5s .05s}
+.item .lbl{font:600 10px/1.3 var(--mono);letter-spacing:.18em;text-align:right;margin-bottom:16px}
+.item h3{font:500 clamp(24px,2.4vw,36px)/1.15 var(--sans);margin-bottom:14px}
+.item p{font-size:13px;line-height:1.9;color:var(--soft)}
+.item p+p{font:400 11px/1.7 var(--mono);color:var(--dim);margin-top:12px;padding-left:16px;border-left:1px solid var(--line)}
+
+#contact{justify-content:flex-end;align-items:center;text-align:center;padding-left:var(--gutter)}
+#contact .h{font-size:clamp(38px,6vw,96px)}
+#contact .lead{margin:0 auto}
+#contact .cta-row{justify-content:center}
+.fine{margin-top:20px;font:400 10px/1.7 var(--mono);letter-spacing:.12em;color:var(--dim)}
+
+@media (max-width:760px){
+  .nav-links,.hud,.rail,.news,.more{display:none}
+  .btn-contact{margin-left:auto}
+  .btn-contact .wide{display:none}
+  .blk{padding-left:var(--gutter);padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  .soundbar{flex-wrap:wrap;font-size:10px;gap:8px}.soundbar p{flex-basis:100%}
+  .vgrid{grid-template-columns:1fr;gap:20px}.hl{text-align:left}
+  #program{align-items:stretch}
+  .items{width:100%;min-height:250px;margin-top:auto;margin-bottom:0}
+  .item h3{font-size:22px}
+  .item p+p{display:none}
+  .caps{min-height:170px}
+}
+.reduce .rise,.reduce .cap,.reduce .item{transition:opacity .3s}
+.reduce .rise{transform:none}
+.reduce #loader .g,.reduce #loader .logo{animation:none;stroke-dashoffset:0}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<div id="loader" aria-hidden="true">
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+    <g>
+      <line class="g" x1="0" y1="250" x2="1600" y2="250"/><line class="g" x1="0" y1="640" x2="1600" y2="640"/>
+      <line class="g" x1="0" y1="610" x2="1600" y2="610"/><line class="g" x1="800" y1="0" x2="800" y2="900"/>
+      <line class="g" x1="560" y1="0" x2="560" y2="900"/><line class="g" x1="1040" y1="0" x2="1040" y2="900"/>
+      <line class="g" x1="630" y1="-80" x2="1080" y2="900"/><line class="g" x1="970" y1="-80" x2="520" y2="900"/>
+      <line class="g" x1="600" y1="-80" x2="1050" y2="900"/><line class="g" x1="1000" y1="-80" x2="550" y2="900"/>
+      <circle class="g" cx="800" cy="470" r="230"/><circle class="g" cx="800" cy="470" r="120"/>
+    </g>
+    <polygon class="logo" points="800,250 1000,640 600,640"/>
+    <polygon class="logo" points="800,400 900,600 700,600"/>
+  </svg>
+</div>
+
+<header class="nav">
+  <a class="brand" href="#hero" aria-label="PRISM NIGHT 首頁">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,10 92,84 8,84" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="round"/></svg>
+    PRISM NIGHT
+  </a>
+  <nav class="nav-links" aria-label="主選單">
+    <a href="#works">Works</a><a href="#vision">Vision</a><a href="#program">Program</a>
+  </nav>
+  <a class="btn-contact" href="#contact">Contact<span class="wide"> / Ticket</span></a>
+  <button class="sound" id="sound" type="button" aria-pressed="false" aria-label="音效開關"><span><i></i><i></i><i></i><i></i></span></button>
+</header>
+
+<aside class="hud" aria-hidden="true">
+  <div>Prism Quaternion</div>
+  <div class="q" id="quat">0.00  0.00  0.00  1.00</div>
+  <canvas id="gizmo" width="128" height="128"></canvas>
+  <button type="button" id="reset" tabindex="-1">Reset Quaternion</button>
+</aside>
+
+<nav class="rail" aria-label="捲動進度">
+  <a href="#hero" style="top:0%">TOP</a><a href="#works" style="top:6%">WORKS</a><a href="#vision" style="top:60%">VISION</a><a href="#program" style="top:73%">PROGRAM</a><a href="#contact" style="top:96%">CONTACT</a>
+  <i id="railpos"></i>
+</nav>
+
+<main>
+  <section class="blk" id="hero" aria-labelledby="hero-t">
+    <p class="eyebrow rise">2026.12.19 — 12.20 ・ 台北・第七倉庫</p>
+    <h1 class="h rise" id="hero-t">PRISM NIGHT</h1>
+    <p class="lead rise">把光拆開，看見另一座城市。<br>兩個夜晚・12 件沉浸式作品・一座不關燈的倉庫。</p>
+    <div class="cta-row rise late"><a class="btn primary" href="#contact">搶先報名 →</a><a class="btn ghost" href="#works">看作品</a></div>
+    <ul class="news rise">
+      <b>NEWS</b>
+      <li>2026.10.01<span>早鳥票開賣，限量 800 張</span></li>
+      <li>2026.09.12<span>公布第一波 6 組創作者</span></li>
+    </ul>
+  </section>
+
+  <section class="blk" id="works-in" aria-labelledby="works-t">
+    <p class="eyebrow rise">02 — Works</p>
+    <h2 class="h rise" id="works-t">展出作品</h2>
+    <p class="lead rise">12 件作品，先看 6 件。往下捲，螢幕會一片一片轉過來。</p>
+  </section>
+
+  <section class="blk" id="works" aria-label="作品列表">
+    <div class="caps">
+      <article class="cap" data-c="#7a5cff"><p class="meta">2026.12.19 <span class="mark">3F 主廳・光學裝置</span></p><h3>REFRACT</h3><p class="zh">折射室 — 一道白光走進來，七道顏色走出去。</p><span class="tag">installation</span><span class="tag">optics</span><span class="tag">3F</span></article>
+      <article class="cap" data-c="#2fe0a8"><p class="meta">2026.12.19 <span class="mark">B1・生成聲音</span></p><h3>NOISE GARDEN</h3><p class="zh">雜訊花園 — 每朵花都在播一段雜訊，走越近越安靜。</p><span class="tag">generative</span><span class="tag">sound</span><span class="tag">B1</span></article>
+      <article class="cap" data-c="#ff8a3d"><p class="meta">2026.12.19 <span class="mark">外牆・建築投影</span></p><h3>LAYER 7</h3><p class="zh">第七層 — 外牆拆成七層光，每 20 分鐘重組一次。</p><span class="tag">projection</span><span class="tag">facade</span></article>
+      <article class="cap" data-c="#ff3fb4"><p class="meta">2026.12.19 <span class="mark">每晚 22:00・現場演出</span></p><h3>DISTORTED CHOIR</h3><p class="zh">失真合唱 — 十二支麥克風，一首被故意唱壞的歌。</p><span class="tag">live</span><span class="tag">voice</span></article>
+      <article class="cap" data-c="#2f8bff"><p class="meta">2026.12.20 <span class="mark">2F・互動地面</span></p><h3>LOW-RES SEA</h3><p class="zh">低解析海 — 踩上去，像素浪花會記得你的腳步。</p><span class="tag">interactive</span><span class="tag">floor</span></article>
+      <article class="cap" data-c="#ffb36b"><p class="meta">2026.12.20 <span class="mark">05:00・閉幕演出</span></p><h3>MIDNIGHT SIGNAL</h3><p class="zh">午夜訊號 — 天亮前最後一小時，整座倉庫一起收訊。</p><span class="tag">closing</span><span class="tag">a/v</span></article>
+    </div>
+    <a class="more" href="#contact">全部 12 件作品 ↗</a>
+  </section>
+
+  <section class="blk" id="outro" aria-hidden="true">
+    <p class="eyebrow rise">12 works ・ 2 nights ・ 1 warehouse</p>
+  </section>
+
+  <section class="blk" id="vision" aria-labelledby="vision-t">
+    <h2 class="outline rise" id="vision-t">VISION</h2>
+    <div class="vgrid">
+      <div class="vtxt rise">
+        <p>我們把倉庫的燈全關掉，把光交給 12 組創作者。沒有導覽路線，沒有標準答案，你走到哪裡，展覽就從哪裡開始。</p>
+        <p>We switch the lights off and hand the light to twelve artists. No route, no right answer.</p>
+      </div>
+      <p class="hl" id="hl"><span class="ln">把光拆開，</span><br><span class="ln">讓城市重新被看見。</span></p>
+    </div>
+  </section>
+
+  <section class="blk" id="prog-in" aria-hidden="true">
+    <p class="eyebrow rise">03 — Program</p>
+  </section>
+
+  <section class="blk" id="program" aria-label="活動內容">
+    <div class="items">
+      <article class="item"><p class="lbl">PRISM NIGHT<br>ORIGINAL</p><h3>夜間展覽<br>Night Exhibition</h3><p>18:00 開門到隔日 06:00。12 件作品分散在倉庫三層樓與外牆，一張票可以整夜進出。</p><p>Twelve works across three floors and the facade. One ticket, all night.</p></article>
+      <article class="item"><p class="lbl">HANDS-ON<br>WORKSHOP</p><h3>創作工作坊<br>Light Workshop</h3><p>跟著創作者用手機、稜鏡和投影機做出自己的光影作品，每場 20 人，現場報名。</p><p>Build your own light piece with a phone, a prism and a projector.</p></article>
+      <article class="item"><p class="lbl">12.20<br>05:00 AM</p><h3>閉幕派對<br>Closing Signal</h3><p>天亮前一小時，所有作品同步到同一個訊號。最後一首歌結束時，倉庫的燈才會打開。</p><p>All twelve works sync to one signal before sunrise.</p></article>
+    </div>
+  </section>
+
+  <section class="blk" id="contact" aria-labelledby="contact-t">
+    <p class="eyebrow rise">04 — Ticket / Contact</p>
+    <h2 class="h rise" id="contact-t">JOIN THE NIGHT</h2>
+    <p class="lead rise">早鳥票 11/30 截止，只有 800 張。</p>
+    <div class="cta-row rise"><a class="btn primary" href="mailto:hello@prism-night.example?subject=%E5%A0%B1%E5%90%8D%20PRISM%20NIGHT">立即報名 →</a><a class="btn ghost" href="mailto:hello@prism-night.example?subject=%E5%90%88%E4%BD%9C%E6%8F%90%E6%A1%88">合作提案</a></div>
+    <p class="fine rise">hello@prism-night.example<br>本頁為虛構活動 demo</p>
+  </section>
+</main>
+
+<div class="soundbar" id="soundbar" role="region" aria-label="音效提示">
+  <p>本站含有音效，要開啟嗎？</p>
+  <button type="button" id="snd-on">開啟音效</button>
+  <button type="button" id="snd-off">先不要</button>
+</div>
+
+<script type="module">
+const R = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MOBILE = matchMedia('(max-width: 760px), (pointer: coarse)').matches;
+const root = document.documentElement;
+if (R) root.classList.add('reduce');
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const sm = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const trap = (s, a, b, c, d) => s <= a || s >= d ? 0 : s < b ? (s - a) / (b - a) : s <= c ? 1 : (d - s) / (d - c);
+
+// ---------- scroll timeline (1 unit ≈ one screen of scrolling) ----------
+const MAX = 16.6;
+const JUMP = { hero: 0, works: 1.4, vision: 10.2, program: 12.2, contact: 16.2 };
+const BLOCKS = [['hero', -1, .45], ['works-in', .95, 2.15], ['works', 2.2, 7.8], ['outro', 8.05, 8.95], ['vision', 9.6, 11.3], ['prog-in', 11.6, 12.5], ['program', 12.6, 15.4], ['contact', 15.6, 99]]
+  .map(([id, a, b]) => [document.getElementById(id), a, b]);
+const caps = $$('.cap'), items = $$('.item');
+const WORK_COLORS = caps.map(c => c.dataset.c);
+
+let target = 0, s = 0, vel = 0, lastInput = 0, lastDir = 1;
+let introAt = 0, introDone = false, ctaShown = false;
+let gl = null, mx = 0, my = 0, pmx = 0, pmy = 0;
+function scrollTo(v) { v = clamp(v, 0, MAX); if (v !== target) lastDir = Math.sign(v - target); target = v; lastInput = performance.now(); finishIntro(); }
+
+const hlChars = [];
+$$('#hl .ln').forEach(ln => { const t = ln.textContent; ln.textContent = ''; for (const c of t) { const e = document.createElement('span'); e.className = 'c'; e.textContent = c; ln.append(e); hlChars.push(e); } });
+BLOCKS.forEach(([el]) => el.querySelectorAll('.rise').forEach((r, i) => r.style.setProperty('--d', i * .08 + 's')));
+
+// ---------- sound (WebAudio only, off by default) ----------
+const sfx = (() => {
+  let ac, out, noise, on = false;
+  function init() {
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    out = ac.createGain(); out.gain.value = 0; out.connect(ac.destination);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420; lp.Q.value = 5; lp.connect(out);
+    [[55, 'sawtooth', -6], [82.4, 'sawtooth', 5], [110, 'triangle', 0]].forEach(([f, type, det]) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type; o.frequency.value = f; o.detune.value = det; g.gain.value = .06; o.connect(g).connect(lp); o.start();
+    });
+    const lfo = ac.createOscillator(), lg = ac.createGain();
+    lfo.frequency.value = .07; lg.gain.value = 260; lfo.connect(lg).connect(lp.frequency); lfo.start();
+    noise = ac.createBuffer(1, ac.sampleRate * .4, ac.sampleRate);
+    const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  const env = (node, peak, len) => {
+    const g = ac.createGain(), t = ac.currentTime;
+    g.gain.setValueAtTime(peak, t); g.gain.exponentialRampToValueAtTime(.0001, t + len);
+    node.connect(g).connect(out); return t;
+  };
+  return {
+    set(v) { if (!ac) init(); on = v; ac.resume(); out.gain.setTargetAtTime(on ? .6 : 0, ac.currentTime, .15); return on; },
+    get on() { return on; },
+    whoosh(v = .35) {
+      if (!on) return;
+      const t = ac.currentTime, src = ac.createBufferSource(), bp = ac.createBiquadFilter();
+      src.buffer = noise; bp.type = 'bandpass'; bp.Q.value = 2;
+      bp.frequency.setValueAtTime(300, t); bp.frequency.exponentialRampToValueAtTime(2600, t + .3);
+      src.connect(bp); env(bp, v, .38); src.start();
+    },
+    blip(f = 880, v = .06) { if (!on) return; const o = ac.createOscillator(); o.frequency.value = f; const t = env(o, v, .12); o.start(t); o.stop(t + .14); }
+  };
+})();
+const soundBtn = $('#sound'), soundbar = $('#soundbar');
+const setSound = v => { soundBtn.setAttribute('aria-pressed', sfx.set(v)); soundbar.classList.add('gone'); };
+soundBtn.addEventListener('click', () => setSound(!sfx.on));
+$('#snd-on').addEventListener('click', () => setSound(true));
+$('#snd-off').addEventListener('click', () => soundbar.classList.add('gone'));
+$$('.btn, .nav-links a, .btn-contact, .more').forEach(el => el.addEventListener('pointerenter', () => sfx.blip(1320, .03)));
+
+// ---------- glitch envelope ----------
+let gAt = -1e9, gAmp = 0;
+const glitchNow = now => { const t = Math.max(0, now - gAt) / 1000; return gAmp * (t < .1 ? t / .1 : Math.exp(-(t - .1) * 6)); };
+function kick(a) { if (R) return; const now = performance.now(); if (a >= glitchNow(now)) { gAt = now; gAmp = a; } }
+
+// ---------- loader + intro ----------
+function tryStart() { const t = performance.now(); if (!introAt && (t >= 1400 || (gl && t >= 1000))) startIntro(); }
+setTimeout(tryStart, Math.max(0, 1000 - performance.now()));
+setTimeout(tryStart, Math.max(0, 1400 - performance.now()));
+function startIntro() {
+  introAt = performance.now();
+  $('#loader').classList.add('out');
+  kick(.8);
+  setTimeout(() => { if (!introDone) $('#hero').classList.add('on'); }, R ? 0 : 1200);
+  setTimeout(showCta, R ? 0 : 5600);
+  setTimeout(finishIntro, R ? 0 : 6200);
+}
+function showCta() { if (ctaShown) return; ctaShown = true; $('#hero').classList.add('cta-in'); kick(.5); sfx.blip(660); }
+function finishIntro() {
+  if (introDone || !introAt) return;
+  introDone = true; showCta();
+  document.body.classList.add('ready');
+  if (!R) idle();
+}
+function idle() { setTimeout(() => { if (document.visibilityState === 'visible' && Math.abs(vel) < .05) kick(.22); idle(); }, 4000 + Math.random() * 3000); }
+
+// ---------- input ----------
+addEventListener('wheel', e => {
+  const d = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
+  scrollTo(target + clamp(d, -240, 240) / innerHeight * 1.7);
+}, { passive: true });
+let ty = 0, tt = 0;
+addEventListener('touchstart', e => { ty = e.touches[0].clientY; tt = target; }, { passive: true });
+addEventListener('touchmove', e => scrollTo(tt + (ty - e.touches[0].clientY) / innerHeight * 1.8), { passive: true });
+addEventListener('keydown', e => {
+  const k = e.key, step = { ArrowDown: .35, ArrowUp: -.35, PageDown: 1, PageUp: -1 }[k];
+  if (step) { e.preventDefault(); scrollTo(target + step); }
+  else if (k === ' ' && !e.target.closest('button, a')) { e.preventDefault(); scrollTo(target + (e.shiftKey ? -1 : 1)); }
+  else if (k === 'Home') scrollTo(0);
+  else if (k === 'End') scrollTo(MAX);
+});
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const v = JUMP[a.getAttribute('href').slice(1)];
+  if (v === undefined) return;
+  e.preventDefault(); sfx.whoosh(); scrollTo(v);
+});
+addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; } }, { passive: true });
+
+// ---------- per-frame UI ----------
+let curCap = -1, curItem = -1, curSec = '';
+const navLinks = $$('.rail a, .nav-links a'), railPos = $('#railpos');
+function updateUI() {
+  BLOCKS.forEach(([el, a, b]) => { if (el.id !== 'hero' || introDone) el.classList.toggle('on', s >= a && s <= b); });
+  const ci = clamp(Math.round(s - 2.5), 0, 5);
+  if (ci !== curCap) { caps.forEach((c, i) => c.classList.toggle('cur', i === ci)); if (curCap >= 0 && s > 2.2 && s < 7.8) { sfx.blip(520 + ci * 70); kick(.18); } curCap = ci; }
+  const ii = clamp(Math.round(s - 13), 0, 2);
+  if (ii !== curItem) { items.forEach((c, i) => c.classList.toggle('cur', i === ii)); curItem = ii; }
+  const vis = clamp(s - 9.75, 0, 1) * hlChars.length;
+  hlChars.forEach((c, i) => c.classList.toggle('v', i < vis));
+  document.body.classList.toggle('light', s > 9.45 && s < 11.45);
+  const sec = s < .9 ? 'hero' : s < 9.4 ? 'works' : s < 11.5 ? 'vision' : s < 15.5 ? 'program' : 'contact';
+  if (sec !== curSec) { curSec = sec; navLinks.forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + sec)); }
+  railPos.style.top = (s / MAX * 100).toFixed(2) + '%';
+}
+
+let last = performance.now(), T = 0;
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(.05, (now - last) / 1000); last = now; T += dt;
+  // once input stops, snap to the next screen in the scroll direction (a small nudge is enough)
+  if (now - lastInput > 180) {
+    const k = 1 - Math.exp(-dt * 6);
+    if (target > 2.3 && target < 7.7) target += (2.5 + clamp(Math.round(target - 2.5 + lastDir * .4), 0, 5) - target) * k;
+    else if (target > 12.7 && target < 15.3) target += (13 + clamp(Math.round(target - 13 + lastDir * .4), 0, 2) - target) * k;
+  }
+  const prev = s;
+  s += (target - s) * (1 - Math.exp(-dt * (R ? 9 : 6.5)));
+  vel = (s - prev) / Math.max(dt, 1e-3);
+  const k = 1 - Math.exp(-dt * 4);
+  pmx += (mx - pmx) * k; pmy += (my - pmy) * k;
+  updateUI();
+  if (gl) gl.render(now, dt, T);
+}
+requestAnimationFrame(loop);
+
+// ---------- three.js ----------
+const sc = document.createElement('script');
+sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+sc.onload = initGL;
+sc.onerror = () => root.classList.add('nogl');
+document.head.append(sc);
+
+const NOISE_GLSL = `
+float h21(vec2 p){ return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
+float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+  return mix(mix(h21(i), h21(i + vec2(1., 0.)), f.x), mix(h21(i + vec2(0., 1.)), h21(i + vec2(1., 1.)), f.x), f.y); }
+float fbm(vec2 p){ float v = 0., a = .5; for (int i = 0; i < 5; i++) { v += a * vnoise(p); p *= 2.03; a *= .5; } return v; }
+vec3 pal(float t, vec3 a, vec3 b, vec3 c, vec3 d){ return a + b * cos(6.2832 * (c * t + d)); }`;
+
+// tile wall: each tile is an instance on the inside of a cylinder; big text is projected across all tiles
+const TILE_VS = `
+attribute float aRand;
+uniform float uTime, uBreak, uIntro;
+varying vec2 vUv; varying vec3 vW; varying float vRand;
+void main(){
+  vUv = uv; vRand = aRand;
+  vec4 w0 = modelMatrix * instanceMatrix * vec4(position, 1.);
+  vW = w0.xyz;
+  float a = atan(w0.x, -w0.z);
+  float d = length(vec2(a * 2.5, w0.y * .15)) * .25;
+  float show = smoothstep(d, d + .35, uIntro);
+  vec3 p = position * show;
+  p.z += (aRand - .5) * 7. * uBreak + sin(uTime * .8 + aRand * 30.) * .1 - (1. - show) * 5.;
+  gl_Position = projectionMatrix * viewMatrix * modelMatrix * instanceMatrix * vec4(p, 1.);
+}`;
+const TILE_FS = `
+uniform sampler2D uTexA, uTexB;
+uniform float uMix, uTextAmt, uFullA, uFullB, uScroll, uTime, uGlow, uGrid, uTintAmt, uTW, uTH;
+uniform vec3 uTint;
+varying vec2 vUv; varying vec3 vW; varying float vRand;
+vec4 wallTex(sampler2D t, float full){
+  float a = atan(vW.x, -vW.z);
+  float v = vW.y / (uTH * 2.) + .5;
+  vec2 uv = full > .5 ? vec2(a / 6.2832 * 3. + .5 + uScroll, v) : vec2(a / uTW + .5, v);
+  float inside = step(0., uv.y) * step(uv.y, 1.) * mix(step(0., uv.x) * step(uv.x, 1.), 1., full);
+  return texture2D(t, uv) * inside;
+}
+void main(){
+  vec2 g = vUv;
+  float a = atan(vW.x, -vW.z);
+  float front = exp(-a * a * 1.3) * smoothstep(10., 1., abs(vW.y));
+  float edge = min(min(g.x, 1. - g.x), min(g.y, 1. - g.y));
+  vec2 sg = abs(fract(g * 4.) - .5);
+  float sub = smoothstep(.465, .5, max(sg.x, sg.y));
+  float dotc = smoothstep(.07, .02, length(min(g, 1. - g)));
+  vec3 col = vec3(.035, .03, .07) + vRand * .02;
+  col += uTint * front * uTintAmt * (.45 + .55 * vRand);
+  col += vec3(.17, .25, 1.) * step(.86, vRand) * uGlow * (.55 + .45 * sin(uTime * 2.2 + vRand * 40.));
+  vec3 mauve = mix(vec3(.25, .2, .26), vec3(.55, .44, .5), smoothstep(-8., 6., vW.y)) * (.5 + .5 * front);
+  col = mix(col, mauve, uGrid);
+  col += mix(vec3(.3, .28, .55), vec3(.95), uGrid) * (smoothstep(.025, .0, edge) * .55 + sub * mix(.1, .3, uGrid)) * (.45 + .55 * front);
+  col += vec3(.9) * dotc * .55;
+  vec4 t = mix(wallTex(uTexA, uFullA), wallTex(uTexB, uFullB), uMix);
+  col = mix(col, t.rgb, t.a * uTextAmt * .96);
+  col *= smoothstep(12.5, 5., abs(vW.y));
+  gl_FragColor = vec4(col, 1.);
+}`;
+
+// procedural "video" for the curved screens, with a mosaic dissolve driven by uReveal
+const SCREEN_FS = `
+uniform float uTime, uMode, uReveal, uFocus;
+varying vec2 vUv;
+${NOISE_GLSL}
+float sdTri(vec2 p, float r){ const float k = 1.7320508; p.x = abs(p.x) - r; p.y = p.y + r / k;
+  if (p.x + k * p.y > 0.) p = vec2(p.x - k * p.y, -k * p.x - p.y) / 2.; p.x -= clamp(p.x, -2. * r, 0.); return -length(p) * sign(p.y); }
+vec3 art(vec2 uv, float t){
+  vec2 p = uv - .5; p.x *= 1.85;
+  vec3 c;
+  if (uMode < .5) {
+    c = vec3(.02, .015, .05);
+    float an = atan(p.y, p.x - .05);
+    vec3 rb = pal(an * .9 + .2, vec3(.5), vec3(.5), vec3(1.), vec3(0., .33, .67));
+    c += rb * smoothstep(.55, 0., abs(an)) * step(.05, p.x) * (1. - length(p) * .8) * (.7 + .3 * sin(t * 4. - length(p) * 30.));
+    c += vec3(1.) * smoothstep(.012, 0., abs(p.y)) * step(p.x, .05);
+    c += vec3(.85, .9, 1.) * smoothstep(.014, 0., abs(sdTri(p - vec2(.05, 0.), .2)));
+  } else if (uMode < 1.5) {
+    vec2 q = p * 3.;
+    float f = fbm(q + vec2(t * .15, -t * .1) + fbm(q * 1.5 - t * .1));
+    c = pal(f + length(p) * .3, vec3(.2, .5, .4), vec3(.4, .4, .5), vec3(1.), vec3(.1, .35, .6)) * (.35 + f);
+    c += vec3(1., .5, .8) * smoothstep(.12, 0., abs(sin(atan(p.y, p.x) * 6. + t) * .25 - length(p) + .3)) * .5;
+  } else if (uMode < 2.5) {
+    float band = floor(uv.y * 7.);
+    float x = uv.x + t * (h21(vec2(band, 1.)) - .5) * .4;
+    float win = step(.5, fract(x * 24.)) * step(.35, fract(uv.y * 21.)) * step(.35, h21(vec2(floor(x * 24.), band + floor(t))));
+    c = pal(band / 7. + t * .02, vec3(.5, .3, .4), vec3(.5, .3, .3), vec3(1.), vec3(0., .15, .3)) * (.18 + .82 * win);
+  } else if (uMode < 3.5) {
+    float col = floor(uv.x * 40.);
+    float hgt = .12 + .75 * vnoise(vec2(col * .35, t * 2.)) * (.6 + .4 * sin(t * 3. + col * .2));
+    float bar = step(abs(uv.y - .5) * 2., hgt) * step(.25, fract(uv.x * 40.));
+    c = mix(vec3(.05, 0., .07), mix(vec3(1., .25, .7), vec3(.3, .9, 1.), uv.y), bar);
+  } else if (uMode < 4.5) {
+    vec2 g = floor(uv * vec2(64., 36.)) / vec2(64., 36.);
+    float w = sin(g.x * 12. + t * 1.5) * .06 + sin(g.x * 27. - t * 2.) * .03 + .42 + fbm(g * 6. + t * .3) * .15;
+    c = mix(vec3(.02, .04, .12) + vec3(.3, .1, .5) * g.y, mix(vec3(.05, .3, .9), vec3(.45, .95, 1.), g.y * 1.8), step(g.y, w));
+  } else {
+    vec2 q = p - vec2(0., -.6); float r = length(q);
+    c = mix(vec3(1., .55, .25), vec3(.05, .03, .2), smoothstep(0., .9, uv.y)) * .85;
+    c += vec3(1., .85, .65) * smoothstep(.06, 0., abs(fract(r * 5. - t * .5) - .5) - .44) * .6 * (1. - r);
+  }
+  return c;
+}
+void main(){
+  vec2 uv = vec2(1. - vUv.x, vUv.y);
+  float bs = mix(.07, .002, uReveal);
+  vec2 cell = floor(uv / bs);
+  vec3 c = art(mix((cell + .5) * bs, uv, smoothstep(.8, 1., uReveal)), uTime) * step(h21(cell), uReveal * 1.2);
+  float e = min(min(uv.x, 1. - uv.x), min(uv.y, 1. - uv.y));
+  c += vec3(.7, .7, 1.) * smoothstep(.008, 0., e) * .5 * uReveal;
+  c *= mix(.4, 1., uFocus);
+  gl_FragColor = vec4(c, 1.);
+}`;
+
+// glass: samples the already-rendered background with a normal-based offset per colour channel
+const GLASS_VS = `
+varying vec3 vN, vV; varying vec4 vClip;
+void main(){
+  vec4 wp = modelMatrix * vec4(position, 1.);
+  vN = normalize(mat3(modelMatrix) * normal);
+  vV = normalize(cameraPosition - wp.xyz);
+  vClip = projectionMatrix * viewMatrix * wp;
+  gl_Position = vClip;
+}`;
+const GLASS_FS = `
+uniform sampler2D tBg; uniform float uTime, uStr;
+varying vec3 vN, vV; varying vec4 vClip;
+void main(){
+  vec2 suv = vClip.xy / vClip.w * .5 + .5;
+  vec3 n = normalize(vN);
+  vec2 off = (viewMatrix * vec4(n, 0.)).xy * uStr;
+  vec3 col = vec3(texture2D(tBg, suv - off).r, texture2D(tBg, suv - off * 1.18).g, texture2D(tBg, suv - off * 1.36).b);
+  float fr = pow(1. - abs(dot(n, vV)), 2.5);
+  vec3 ir = .5 + .5 * cos(6.2832 * (fr * 1.4 + n.y * .3 + uTime * .05 + vec3(0., .33, .67)));
+  vec3 L = normalize(vec3(.4, .8, .6));
+  float sp = pow(max(dot(reflect(-L, n), vV), 0.), 48.);
+  col = col * 1.1 + ir * fr * .9 + fr * .2 + sp;
+  gl_FragColor = vec4(col, 1.);
+}`;
+
+// post: barrel lens (scroll-speed driven), chromatic split, glitch bands, grain, vignette
+const POST_FS = `
+uniform sampler2D tBg, tGlass; uniform float uTime, uDist, uG, uLight; uniform vec2 uRes;
+varying vec2 vUv;
+float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+vec2 lens(vec2 uv, float k){ vec2 p = uv * 2. - 1.; float r2 = dot(p, p); p *= (1. + k * r2 + k * .45 * r2 * r2) / (1. + k * .55); return p * .5 + .5; }
+vec3 comp(vec2 uv){
+  vec4 g = texture2D(tGlass, uv);
+  float inb = step(0., uv.x) * step(uv.x, 1.) * step(0., uv.y) * step(uv.y, 1.);
+  return mix(vec3(.74, .72, .74) * uLight, mix(texture2D(tBg, uv).rgb, g.rgb, g.a), inb);
+}
+void main(){
+  vec2 uv = vUv;
+  float t = floor(uTime * 24.);
+  float band = floor(uv.y * mix(12., 40., h(vec2(t, 1.))));
+  uv.x += (h(vec2(band * 1.7, t)) - .5) * .18 * uG * step(1. - uG * .8, h(vec2(band, t)));
+  float ca = .0035 + uDist * .025 + uG * .02;
+  vec3 col = vec3(comp(lens(uv, uDist + ca)).r, comp(lens(uv, uDist)).g, comp(lens(uv, uDist - ca)).b);
+  vec2 p = vUv * 2. - 1.;
+  float vig = smoothstep(1.45, .25, length(p * vec2(1., .9)));
+  col *= mix(vig, .78 + .22 * vig, uLight);
+  col += (h(vUv * uRes + fract(uTime) * 91.) - .5) * (.055 + .05 * uLight + .3 * uG);
+  gl_FragColor = vec4(col, 1.);
+}`;
+
+function initGL() {
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas: $('#gl'), powerPreference: 'high-performance' }); } catch { root.classList.add('nogl'); return; }
+  const V3 = THREE.Vector3;
+  let dpr = Math.min(devicePixelRatio || 1, MOBILE ? 1.25 : 1.6);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, 1, .05, 100);
+  camera.rotation.order = 'YXZ';
+  const RTC = renderer.capabilities.isWebGL2 && !MOBILE ? THREE.WebGLMultisampleRenderTarget : THREE.WebGLRenderTarget;
+  const rtBg = new RTC(1, 1), rtGlass = new THREE.WebGLRenderTarget(1, 1);
+  const uTime = { value: 0 };
+
+  // --- wall text textures ---
+  const TW = MOBILE ? 1024 : 2048, TH = TW / 4;
+  const wallTex = draw => {
+    const c = document.createElement('canvas'); c.width = TW; c.height = TH;
+    const t = new THREE.CanvasTexture(c); t.wrapS = THREE.RepeatWrapping;
+    t.redraw = () => { const x = c.getContext('2d'); x.clearRect(0, 0, TW, TH); draw(x); t.needsUpdate = true; };
+    t.redraw(); return t;
+  };
+  const bigWord = (word, size = .8) => x => {
+    x.fillStyle = '#f4f1ff'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = `800 ${TH * size}px Unbounded, sans-serif`; x.fillText(word, TW / 2, TH * .53, TW * .96);
+  };
+  const TEX = [
+    wallTex(bigWord('PRISM')),
+    wallTex(bigWord('WORKS')),
+    wallTex(x => {
+      const g = x.createLinearGradient(0, 0, TW, TH); g.addColorStop(0, '#ff6fb4'); g.addColorStop(.5, '#ffb36b'); g.addColorStop(1, '#8a5cff');
+      x.fillStyle = g; x.textBaseline = 'middle'; x.font = `800 ${TH * .2}px Unbounded, sans-serif`;
+      for (let r = 0; r < 4; r++) for (let k = -1; k < 4; k++) x.fillText('PRISM NIGHT', k * TW * .42 + (r % 2) * TW * .21, TH * (.14 + r * .24));
+    }),
+    wallTex(x => {
+      x.fillStyle = '#efe9f6'; x.textBaseline = 'middle'; x.font = `800 ${TH * .62}px Unbounded, sans-serif`;
+      const w = x.measureText('PROGRAM ・ ').width;
+      for (let k = 0; k * w < TW; k++) x.fillText('PROGRAM ・ ', k * w, TH * .54);
+    }),
+  ];
+  const FULL = [0, 0, 0, 1];
+  Promise.all([document.fonts.load('800 40px Unbounded'), document.fonts.load('400 20px "JetBrains Mono"')]).then(() => TEX.forEach(t => t.redraw()));
+  // [texture, fade-in start, full, fade-out start, gone] in scroll units
+  const WALL = [[0, -9, -9, .5, 1.1], [1, .5, 1.1, 2.0, 2.45], [2, 7.5, 8.0, 9.4, 9.8], [3, 11.3, 11.75, 12.4, 12.85]];
+
+  // --- tile wall (cylinder room) ---
+  const RW = 16, C = MOBILE ? 48 : 64, ROWS = MOBILE ? 12 : 16, cw = Math.PI * 2 * RW / C;
+  const tileGeo = new THREE.PlaneGeometry(cw * .965, cw * .965);
+  const tileU = {
+    uTime, uBreak: { value: 0 }, uIntro: { value: 0 }, uTexA: { value: TEX[0] }, uTexB: { value: TEX[0] }, uMix: { value: 0 }, uTextAmt: { value: 0 },
+    uFullA: { value: 0 }, uFullB: { value: 0 }, uScroll: { value: 0 }, uGlow: { value: 1 }, uGrid: { value: 0 }, uTintAmt: { value: 0 },
+    uTint: { value: new THREE.Color() }, uTW: { value: 1.9 }, uTH: { value: 3.8 }
+  };
+  const tiles = new THREE.InstancedMesh(tileGeo, new THREE.ShaderMaterial({ uniforms: tileU, vertexShader: TILE_VS, fragmentShader: TILE_FS }), C * ROWS);
+  const aRand = new Float32Array(C * ROWS), o = new THREE.Object3D();
+  for (let r = 0, k = 0; r < ROWS; r++) for (let c = 0; c < C; c++, k++) {
+    const phi = (c + .5) / C * Math.PI * 2, y = (r - ROWS / 2 + .5) * cw;
+    o.position.set(Math.sin(phi) * RW, y, Math.cos(phi) * RW); o.lookAt(0, y, 0); o.updateMatrix();
+    tiles.setMatrixAt(k, o.matrix); aRand[k] = Math.random();
+  }
+  tileGeo.setAttribute('aRand', new THREE.InstancedBufferAttribute(aRand, 1));
+  tiles.frustumCulled = false;
+  scene.add(tiles);
+
+  // --- floating "+" markers ---
+  const cross = new THREE.BufferGeometry(), cs = .16, ct = .009;
+  cross.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-cs, -ct, 0, cs, -ct, 0, cs, ct, 0, -cs, ct, 0, -ct, -cs, 0, ct, -cs, 0, ct, cs, 0, -ct, cs, 0]), 3));
+  cross.setIndex([0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7]);
+  const crossMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .6, depthWrite: false, side: THREE.DoubleSide });
+  const NC = MOBILE ? 120 : 320, crosses = new THREE.InstancedMesh(cross, crossMat, NC);
+  for (let i = 0; i < NC; i++) {
+    const phi = Math.random() * Math.PI * 2, r = 4.5 + Math.random() * 9, y = (Math.random() - .5) * 12;
+    o.position.set(Math.sin(phi) * r, y, Math.cos(phi) * r); o.lookAt(0, y, 0); o.scale.setScalar(.6 + Math.random() * .8); o.updateMatrix(); crosses.setMatrixAt(i, o.matrix);
+  }
+  crosses.frustumCulled = false;
+  scene.add(crosses);
+
+  // --- curved screens (works carousel + program) ---
+  const screenGeo = new THREE.CylinderGeometry(7, 7, 3.6, 48, 1, true, Math.PI - .475, .95);
+  const screenMat = mode => new THREE.ShaderMaterial({
+    side: THREE.BackSide, uniforms: { uTime, uMode: { value: mode }, uReveal: { value: 0 }, uFocus: { value: 1 } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+    fragmentShader: SCREEN_FS
+  });
+  const screens = [0, 1, 2, 3, 4, 5].map(m => { const me = new THREE.Mesh(screenGeo, screenMat(m)); scene.add(me); return me; });
+  const progScreens = [0, 1, 3].map(m => { const me = new THREE.Mesh(screenGeo, screenMat(m)); scene.add(me); return me; });
+  const tintCols = WORK_COLORS.map(c => new THREE.Color(c));
+
+  // --- light sheet (VISION) + rod ---
+  const sheet = new THREE.Mesh(new THREE.CylinderGeometry(10, 10, 44, 72, 1, true, Math.PI / 2, Math.PI), new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `varying vec3 vW; void main(){ float a = atan(vW.x, -vW.z); float v = exp(-a * a * 1.8) * exp(-vW.y * vW.y * .025);
+      gl_FragColor = vec4(mix(vec3(.74, .72, .74), vec3(.95, .93, .91), .3 + .7 * v), 1.); }`
+  }));
+  scene.add(sheet);
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, 9, 12), new THREE.ShaderMaterial({
+    uniforms: { uTime },
+    vertexShader: `varying vec3 vN, vV; varying float vY; void main(){ vec4 w = modelMatrix * vec4(position, 1.); vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - w.xyz); vY = position.y; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `uniform float uTime; varying vec3 vN, vV; varying float vY; void main(){ float f = 1. - abs(dot(normalize(vN), vV));
+      vec3 c = .55 + .45 * cos(6.2832 * (vY * .06 + f * .6 + uTime * .05 + vec3(.05, .2, .5)));
+      gl_FragColor = vec4(mix(vec3(.85, .68, .3), c, .55) * (.7 + f * .6), 1.); }`
+  }));
+  scene.add(rod);
+
+  // --- glass: triangle logo + crystal (layer 1, refracts layer 0) ---
+  const glassMat = new THREE.ShaderMaterial({ uniforms: { tBg: { value: rtBg.texture }, uTime, uStr: { value: .09 } }, vertexShader: GLASS_VS, fragmentShader: GLASS_FS });
+  const triPts = r => [0, 1, 2].map(i => { const a = Math.PI / 2 + i * Math.PI * 2 / 3; return new THREE.Vector2(Math.cos(a) * r, Math.sin(a) * r); });
+  const outer = new THREE.Shape(triPts(2.4));
+  outer.holes.push(new THREE.Path(triPts(1.25).reverse()));
+  const triGeo = new THREE.ExtrudeGeometry(outer, { depth: .55, bevelEnabled: true, bevelThickness: .16, bevelSize: .12, bevelSegments: 4, curveSegments: 1 });
+  triGeo.center();
+  const tri = new THREE.Mesh(triGeo, glassMat);
+  const crystalGeo = new THREE.OctahedronGeometry(1.5, 0);
+  crystalGeo.scale(.85, 1.6, .7); crystalGeo.computeVertexNormals();
+  const crystal = new THREE.Mesh(crystalGeo, glassMat);
+  [tri, crystal].forEach(m => { m.layers.set(1); scene.add(m); });
+
+  // --- post ---
+  const postU = { tBg: { value: rtBg.texture }, tGlass: { value: rtGlass.texture }, uTime, uDist: { value: 0 }, uG: { value: 0 }, uLight: { value: 0 }, uRes: { value: new THREE.Vector2() } };
+  const post = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+    uniforms: postU, depthTest: false, depthWrite: false, fragmentShader: POST_FS,
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`
+  }));
+  post.frustumCulled = false;
+  const postScene = new THREE.Scene(); postScene.add(post);
+  const postCam = new THREE.Camera();
+
+  // --- HUD gizmo ---
+  const quatEl = $('#quat'), gz = $('#gizmo').getContext('2d');
+  const AX = [[new V3(1, 0, 0), '#ff5577'], [new V3(0, 1, 0), '#55ff9a'], [new V3(0, 0, 1), '#5590ff']], tmpV = new V3();
+  const dimCol = new THREE.Color(.25, .23, .3);
+  let spin = 0;
+  $('#reset').addEventListener('click', () => { spin = -T * .35; kick(.3); sfx.blip(440); });
+  function drawGizmo(q) {
+    gz.clearRect(0, 0, 128, 128);
+    gz.strokeStyle = 'rgba(160,150,200,.5)'; gz.lineWidth = 2; gz.beginPath(); gz.arc(64, 64, 52, 0, 7); gz.stroke();
+    AX.forEach(([a, col]) => {
+      tmpV.copy(a).applyQuaternion(q);
+      gz.strokeStyle = gz.fillStyle = col; gz.lineWidth = 4;
+      gz.beginPath(); gz.moveTo(64, 64); gz.lineTo(64 + tmpV.x * 44, 64 - tmpV.y * 44); gz.stroke();
+      gz.beginPath(); gz.arc(64 + tmpV.x * 44, 64 - tmpV.y * 44, 7, 0, 7); gz.fill();
+    });
+  }
+
+  let narrow = false;
+  function resize() {
+    const w = Math.max(1, innerWidth), h = Math.max(1, innerHeight);
+    renderer.setPixelRatio(dpr); renderer.setSize(w, h, false);
+    rtBg.setSize(Math.round(w * dpr), Math.round(h * dpr)); rtGlass.setSize(Math.round(w * dpr), Math.round(h * dpr));
+    camera.aspect = w / h; narrow = camera.aspect < 1; camera.fov = narrow ? 70 : 55; camera.updateProjectionMatrix();
+    tileU.uTW.value = narrow ? .8 : 1.9; tileU.uTH.value = RW * tileU.uTW.value / 8;
+    postU.uRes.value.set(w, h);
+  }
+  resize();
+  addEventListener('resize', resize);
+
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const camFrom = new V3(0, 2.2, 9), zero = new V3();
+  let frames = 0, ftSum = 0, tuned = false, hudTick = 0;
+
+  gl = {
+    render(now, dt, t) {
+      uTime.value = t;
+      const el = introAt ? Math.max(0, now - introAt) / 1000 : 0;
+      const intro = !R && !introDone && el < 6.2;
+
+      // camera: intro dolly from behind, then mouse parallax only
+      const ce = !introAt && !R ? 0 : intro ? ease(clamp((el - 2) / 4, 0, 1)) : 1;
+      camera.position.lerpVectors(camFrom, zero, ce);
+      camera.rotation.set(-(1 - ce) * .12 - pmy * .045, (1 - ce) * .55 - pmx * .07 + (R ? 0 : Math.sin(t * .15) * .015), 0);
+
+      // wall text: blend the two strongest textures for this scroll position
+      const ws = WALL.map(([i, a, b, c, d]) => [i, trap(s, a, b, c, d)]).sort((x, y) => y[1] - x[1]);
+      const [A, wa] = ws[0], [B, wb] = ws[1];
+      tileU.uTexA.value = TEX[A]; tileU.uTexB.value = TEX[B]; tileU.uFullA.value = FULL[A]; tileU.uFullB.value = FULL[B];
+      tileU.uMix.value = wb / (wa + wb + 1e-5);
+      tileU.uTextAmt.value = Math.min(1, wa + wb) * (R ? 1 : sm(.5, 1.6, el));
+      tileU.uScroll.value = s * .25 + t * .02;
+      tileU.uIntro.value = R ? 3 : el * 1.6;
+      const brk = trap(s, .4, .8, .9, 1.35) + trap(s, 1, 1.3, 1.8, 2.25) * .35 + trap(s, 7.4, 7.8, 7.9, 8.3) * .8 + trap(s, 11.2, 11.6, 12.2, 12.7) * .9 + (intro ? Math.max(0, 1 - el / 2.5) * .6 : 0);
+      tileU.uBreak.value = R ? 0 : brk;
+      tileU.uGlow.value = .12 + trap(s, -9, -9, .4, .9) * .88;
+      tileU.uGrid.value = trap(s, 12.4, 12.9, 15.3, 15.7);
+
+      // works carousel on a ring around the camera
+      const carVis = sm(2.0, 2.5, s) * (1 - sm(7.5, 8.1, s)), carT = clamp(s - 2.5, -.6, 5.6);
+      screens.forEach((m, i) => {
+        const off = i - carT, ao = Math.abs(off);
+        const rev = clamp(1.7 - ao * 1.15, 0, 1) * carVis;
+        m.visible = rev > .001;
+        if (!m.visible) return;
+        const ang = -off * .95, push = Math.min(1, ao) * 2.4;
+        m.rotation.set(0, ang, 0);
+        m.position.set(-Math.sin(ang) * push, 0, -Math.cos(ang) * push);
+        const k = (narrow ? .58 : 1) * (1 - Math.min(1, ao) * .22);
+        m.scale.set(k, k, 1);
+        m.material.uniforms.uReveal.value = rev; m.material.uniforms.uFocus.value = 1 - Math.min(1, ao);
+      });
+      const ci = clamp(Math.round(carT), 0, 5), cf = 1 - Math.min(1, Math.abs(ci - carT) * 1.2);
+      tileU.uTint.value.copy(tintCols[ci]);
+      const outroW = trap(s, 7.6, 8.1, 9.1, 9.6);
+      if (outroW > 0) tileU.uTint.value.lerp(tintCols[3], outroW);
+      tileU.uTintAmt.value = carVis * (.35 + .55 * cf) + outroW * .6;
+
+      // program screens on the left
+      const progVis = sm(12.5, 13, s) * (1 - sm(15.2, 15.6, s)), pT = s - 13;
+      progScreens.forEach((m, k) => {
+        const off = k - pT, rev = clamp(1.3 - Math.abs(off) * 1.8, 0, 1) * progVis;
+        m.visible = rev > .001;
+        if (!m.visible) return;
+        m.rotation.set(0, (narrow ? 0 : .42) - off * .5, 0);
+        m.position.set(0, narrow ? .9 : .2, 0);
+        const sc2 = narrow ? .55 : .82; m.scale.set(sc2, sc2, 1);
+        m.material.uniforms.uReveal.value = rev;
+      });
+
+      // VISION: an off-white curved sheet rises from below, then leaves upward
+      const up = sm(8.9, 9.7, s), away = sm(11.2, 11.95, s);
+      sheet.position.y = -44 + up * 44 + away * 44;
+      sheet.visible = rod.visible = up > 0 && away < 1;
+      postU.uLight.value = up * (1 - away);
+      rod.position.set(narrow ? .2 : .6, 0, -6.2);
+      rod.rotation.set(0, t * .4, .5 + (s - 10) * .35);
+      crossMat.color.setRGB(1, 1, 1).lerp(dimCol, postU.uLight.value);
+      crossMat.opacity = .25 + trap(s, -9, -9, .5, 1) * .25 + tileU.uGrid.value * .6 + postU.uLight.value * .3;
+      crosses.rotation.y = t * .01 + s * .04;
+
+      // glass objects
+      const fly = intro ? ease(clamp((el - .3) / 2.3, 0, 1)) : 1;
+      const triS = Math.max(trap(s, -9, -9, .5, 1.0), trap(s, 7.6, 8.1, 9.0, 9.6) * 1.35, trap(s, 15.3, 15.9, 99, 99) * .7) * (narrow ? .62 : 1);
+      tri.visible = triS > .001;
+      tri.scale.setScalar(Math.max(triS, .001));
+      tri.position.set(0, s > 15 ? 1.5 : 0, -7 - (1 - fly) * 35);
+      tri.rotation.set(Math.sin(t * .5) * .15 + pmy * .3, t * .35 + spin + pmx * .5 + (1 - fly) * 8, Math.sin(t * .3) * .05);
+      const crS = trap(s, .6, 1.1, 1.9, 2.6) * (narrow ? .6 : 1);
+      crystal.visible = crS > .001;
+      crystal.scale.setScalar(Math.max(crS, .001));
+      crystal.position.set(0, 0, -6.5);
+      crystal.rotation.set(t * .2, t * .5 + pmx * .6, .3);
+
+      // lens: constant slight curve + scroll speed + intro fisheye
+      const introLens = intro ? 1.1 * Math.exp(-Math.max(0, el - .15) * 1.5) : 0;
+      postU.uDist.value = R ? 0 : .07 * (1 - postU.uLight.value * .6) + Math.min(.55, Math.abs(vel) * .11) + introLens;
+      postU.uG.value = glitchNow(now);
+
+      renderer.setRenderTarget(rtBg); renderer.setClearColor(0x000000, 1);
+      camera.layers.set(0); renderer.render(scene, camera);
+      renderer.setRenderTarget(rtGlass); renderer.setClearColor(0x000000, 0);
+      camera.layers.set(1); renderer.render(scene, camera);
+      renderer.setRenderTarget(null); renderer.render(postScene, postCam);
+
+      if (++hudTick % 3 === 0 && !narrow) {
+        const q = (tri.visible ? tri : crystal).quaternion;
+        quatEl.textContent = [q.x, q.y, q.z, q.w].map(v => (v < 0 ? '' : ' ') + v.toFixed(2)).join(' ');
+        drawGizmo(q);
+      }
+      if (!tuned && introDone) {
+        ftSum += dt;
+        if (++frames === 90) { tuned = true; if (ftSum / 90 > 1 / 40 && dpr > 1) { dpr = Math.max(1, dpr * .7); resize(); } }
+      }
+    }
+  };
+  $('#gl').classList.add('on');
+  tryStart();
+}
+</script>
+</body>
+</html>
