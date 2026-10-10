@@ -104,20 +104,20 @@ main { overflow-x: clip; }
   background: var(--paper); color: var(--ink);
   padding: 22px clamp(18px, 4vw, 44px) 34px;
   display: grid; align-content: start;
-  filter: drop-shadow(0 18px 22px rgba(25, 8, 4, .45));
+  box-shadow: 0 18px 30px -12px rgba(25, 8, 4, .55);
   transform-origin: 50% 0;
 }
 .page-1 .sheet::before {
   content: ""; position: absolute; left: -6px; right: -6px; top: -30px; height: 34px; border-radius: 6px 6px 0 0;
-  background: linear-gradient(var(--red), var(--red-deep));
-  -webkit-mask: radial-gradient(circle 7px at 25% 55%, #0000 98%, #000) , radial-gradient(circle 7px at 75% 55%, #0000 98%, #000);
-  -webkit-mask-composite: source-in; mask-composite: intersect;
-  mask: radial-gradient(circle 7px at 25% 55%, #0000 98%, #000), radial-gradient(circle 7px at 75% 55%, #0000 98%, #000);
+  background:
+    radial-gradient(circle 7px at 25% 55%, var(--wall-deep) 96%, transparent),
+    radial-gradient(circle 7px at 75% 55%, var(--wall-deep) 96%, transparent),
+    linear-gradient(var(--red), var(--red-deep));
 }
-.page-2 .sheet, .page-3 .sheet {
-  -webkit-mask: linear-gradient(#000 0 0) 0 var(--zz) / 100% calc(100% - var(--zz)) no-repeat, conic-gradient(from 135deg at 50% 100%, #000 90deg, #0000 0) 0 0 / calc(2 * var(--zz)) var(--zz) repeat-x;
-  mask: linear-gradient(#000 0 0) 0 var(--zz) / 100% calc(100% - var(--zz)) no-repeat, conic-gradient(from 135deg at 50% 100%, #000 90deg, #0000 0) 0 0 / calc(2 * var(--zz)) var(--zz) repeat-x;
-  padding-top: calc(22px + var(--zz));
+/* torn top edge drawn as a paper-coloured zigzag strip; iOS Safari crashed when whole sticky sheets were masked and filtered */
+.page-2 .sheet::before, .page-3 .sheet::before {
+  content: ""; position: absolute; left: 0; right: 0; top: calc(-1 * var(--zz) + 1px); height: var(--zz);
+  background: conic-gradient(from -45deg at 50% 100%, var(--paper) 90deg, transparent 0) 0 0 / calc(2 * var(--zz)) var(--zz) repeat-x;
 }
 .page-2 .sheet { rotate: .8deg; }
 .page-3 .sheet { rotate: -.6deg; }
@@ -146,9 +146,12 @@ main { overflow-x: clip; }
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .page-1 .sheet { animation: recede linear both; animation-timeline: --p2; animation-range: entry 10% entry 100%; }
-    .page-2 .sheet { animation: recede linear both; animation-timeline: --p3; animation-range: entry 10% entry 100%; }
-    @keyframes recede { to { transform: translateY(-3%) scale(.93) rotate(-4deg); filter: drop-shadow(0 6px 8px rgba(25,8,4,.3)) brightness(.72); } }
+    .page-1 .sheet, .page-2 .sheet { animation: recede linear both; animation-range: entry 10% entry 100%; }
+    .page-1 .sheet::after, .page-2 .sheet::after { content: ""; position: absolute; inset: 0; background: var(--wall-deep); opacity: 0; pointer-events: none; animation: dim linear both; animation-range: entry 10% entry 100%; }
+    .page-1 .sheet, .page-1 .sheet::after { animation-timeline: --p2; }
+    .page-2 .sheet, .page-2 .sheet::after { animation-timeline: --p3; }
+    @keyframes recede { to { transform: translateY(-3%) scale(.93) rotate(-4deg); } }
+    @keyframes dim { to { opacity: .45; } }
   }
 }
 
@@ -197,7 +200,7 @@ main { overflow-x: clip; }
 
 /* ---------- wall calendar ---------- */
 .koyomi { padding: clamp(40px, 8vw, 100px) var(--gutter) clamp(64px, 10vw, 120px); }
-.wall-cal { max-width: 860px; margin: 0 auto; background: var(--paper); color: var(--ink); padding: clamp(18px, 4vw, 44px); position: relative; filter: drop-shadow(0 22px 26px rgba(25,8,4,.5)); }
+.wall-cal { max-width: 860px; margin: 0 auto; background: var(--paper); color: var(--ink); padding: clamp(18px, 4vw, 44px); position: relative; box-shadow: 0 22px 34px -14px rgba(25,8,4,.6); }
 .wall-cal::before { content: ""; position: absolute; top: -14px; left: 50%; width: 18px; height: 18px; border-radius: 50%; translate: -50% 0; background: radial-gradient(circle at 35% 35%, #fff 0 20%, #888 60%, #444); }
 .wall-cal-head { display: grid; gap: 4px; margin-bottom: 18px; }
 .wall-cal-head h2 { font-size: clamp(2rem, 6vw, 3rem); }
