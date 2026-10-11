@@ -18,6 +18,7 @@
 |---|---|---|
 | PRISM NIGHT | 虛構光影展活動介紹（three.js） | https://sql1024-sql.github.io/shop-demos/06-prism-night/ |
 | ALTITUDE | 虛構山中住宿品牌形象頁（canvas） | https://sql1024-sql.github.io/shop-demos/07-altitude/ |
+| WHITEOUT | 虛構高山影展活動介紹，雪山峽谷飛行（three.js） | https://sql1024-sql.github.io/shop-demos/08-whiteout/ |
 
 純 HTML / CSS / JavaScript，沒有後端、沒有 build 工具。
 
