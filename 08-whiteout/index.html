@@ -467,46 +467,66 @@ float nightK(float e){ return e * 1.2 + .5; }
 float nightMask(float e){ float k = nightK(e); return smoothstep(k - .06, k + .06, uNightIn) * (1. - smoothstep(k - .06, k + .06, uNightOut)); }
 float nightEdge(float e){ float k = nightK(e); return exp(-pow((k - uNightIn) / .006, 2.)) + exp(-pow((k - uNightOut) / .006, 2.)); }`;
 
-const SUN = 'normalize(vec3(-.72, .42, -.3))';
+const SUN = 'normalize(vec3(-.62, .6, -.36))';
 
 // snowy ring of mountains around the camera (heights baked on the CPU, intro/quake in the vertex shader)
 const TERRAIN_VS = `
+attribute vec2 aSA;
 uniform float uTime, uIntro;
-varying vec3 vW, vN; varying float vH;
+varying vec3 vW, vN; varying float vH; varying vec2 vSA;
 void main(){
   vec3 p = position;
   vec4 w0 = modelMatrix * vec4(p, 1.);
   float a = atan(w0.x, -w0.z);
   float show = smoothstep(0., .6, uIntro - (abs(a) * .55 + length(w0.xz) * .009));
   p.y = mix(-6., p.y, show);
-  vH = position.y;
+  vH = position.y; vSA = aSA;
   vec4 w = modelMatrix * vec4(p, 1.);
   vW = w.xyz; vN = normalize(mat3(modelMatrix) * normal);
   gl_Position = projectionMatrix * viewMatrix * w;
 }`;
+// snow & rock shading: baked cast shadow + AO (vSA), per-pixel crag normals, slope/ledge snow, blue sky fill, aerial perspective
 const TERRAIN_FS = `
 uniform float uTime, uTopo, uTintAmt;
 uniform vec3 uTint, uHaze, uNightHaze;
-varying vec3 vW, vN; varying float vH;
+varying vec3 vW, vN; varying float vH; varying vec2 vSA;
 ${NOISE_GLSL}
 ${NIGHT_GLSL}
+float dn(vec2 p){ float v = 0., a = .5; for (int i = 0; i < DET; i++) { v += a * vnoise(p); p = p * 2.13 + 3.7; a *= .5; } return v; }
 void main(){
-  vec3 n = normalize(vN);
-  float slope = 1. - n.y;
-  vec2 sp = vec2(vW.x + vW.z, vW.y);
-  float gr = vnoise(sp * vec2(.9, 1.6)) * .6 + vnoise(vW.xz * .2) * .4;
-  float snow = smoothstep(.6, .4, slope + (gr - .5) * .3);
-  float dif = max(dot(n, ${SUN}), 0.);
-  vec3 snowCol = mix(vec3(.5, .59, .78), vec3(1., .995, .98), smoothstep(0., .6, dif));
-  snowCol = mix(snowCol, snowCol * (uTint * .8 + .35), uTintAmt * dif);
-  vec3 rock = mix(vec3(.13, .16, .25), vec3(.38, .4, .47), dif) * (.65 + .6 * fbm(sp * vec2(.35, 2.2)));
-  vec3 col = mix(rock, snowCol, snow);
-  vec3 ncol = mix(vec3(.015, .025, .06), mix(vec3(.05, .08, .2), vec3(.42, .5, .76), dif * .7 + n.y * .3), snow);
-
   vec3 toC = vW - cameraPosition; float dist = length(toC), e = toC.y / dist;
-  float fog = max((1. - exp(-dist * .0045)) * .6, smoothstep(150., 195., dist));
+  float fog = max((1. - exp(-dist * .006)) * .72, smoothstep(150., 195., dist));
   if (fog > .985) discard;
-  col = mix(col, mix(uHaze, uTint, uTintAmt * .18), fog);
+
+  vec3 n0 = normalize(vN);
+  float near = 1. - smoothstep(40., 130., dist);
+  vec2 q = vW.xz * .32;
+  float h0 = dn(q), hx = dn(q + vec2(.05, 0.)), hz = dn(q + vec2(0., .05));
+  vec2 g = vec2(hx - h0, hz - h0) / .05;
+  float steep = smoothstep(.25, .6, 1. - n0.y);
+  vec3 n = normalize(n0 + vec3(-g.x, 0., -g.y) * mix(.1, .9, steep) * near);
+
+  // snow clings to anything not too steep; cliffs, couloir edges and crags show rock
+  vec2 sp = vec2(vW.x * .7 + vW.z * .7, vW.y);
+  float streak = vnoise(sp * vec2(.25, 2.4)) * .6 + vnoise(vW.xz * .09) * .4;
+  float snow = smoothstep(.6, .44, (1. - n.y) + (streak - .5) * .32 - (h0 - .5) * .18 + smoothstep(30., 0., vH) * -.04);
+  snow = max(snow, smoothstep(-2.2, -3.4, vH));
+
+  vec3 L = ${SUN};
+  float sh = vSA.x, ao = vSA.y;
+  float dif = max(dot(n, L), 0.) * sh;
+  vec3 sunC = mix(vec3(1., .96, .9), uTint * 1.25 + .1, uTintAmt * .7) * 1.12;
+  vec3 skyC = vec3(.5, .62, .86) * (.55 + .45 * n.y);
+  float strata = .7 + .45 * dn(vec2((vW.x + vW.z) * .08, vW.y * 1.1));
+  vec3 rockA = mix(vec3(.16, .15, .16), vec3(.3, .29, .3), vnoise(vW.xz * .05)) * strata;
+  vec3 snowA = vec3(.95, .97, 1.);
+  vec3 alb = mix(rockA, snowA, snow);
+  vec3 col = alb * (sunC * dif + skyC * (.52 + .26 * snow) * ao);
+  col += snowA * snow * vec3(.25, .35, .6) * .12 * (1. - sh) * ao;
+  vec3 ncol = alb * (vec3(.42, .5, .78) * dif * .45 + vec3(.05, .08, .2) * ao);
+
+  vec3 air = mix(uHaze, vec3(.64, .74, .88), .55 * (1. - smoothstep(-.05, .25, e)));
+  col = mix(col, mix(air, uTint, uTintAmt * .15), fog);
   ncol = mix(ncol, uNightHaze, fog);
 
   float f = fract(vH * 1.1), fw = fwidth(vH * 1.1) * 1.3;
@@ -722,11 +742,43 @@ const pathYaw = z => Math.atan2(pathX(z) - pathX(z - 8), 8);
 const PEAKS = [[-85, 24, 46], [-230, -28, 52], [-390, 26, 50], [-560, -24, 56]];
 function height(x, z) {
   const dx = Math.abs(x - pathX(z)), open = sm(5, 16, dx);
-  let h = -4 + vn(x * .12, z * .12) * .9 + sm(5, 32, dx) * (3 + 34 * ridged(x * .02, z * .02));
+  const wx = x + 22 * (vn(x * .006, z * .006) - .5), wz = z + 22 * (vn(x * .006 + 9, z * .006 - 4) - .5);
+  const rg = ridged(wx * .02, wz * .02);
+  let h = -4 + vn(x * .12, z * .12) * .9 + sm(5, 32, dx) * (3 + 38 * rg * rg * 1.4 + 3 * ridged(x * .09, z * .09));
   for (const [pz, off, ph] of PEAKS) h += ph * Math.pow(Math.max(0, 1 - Math.hypot(x - pathX(pz) - off, z - pz) / 34), 1.6) * (.8 + .4 * ridged(x * .05, z * .05)) * open;
   return h;
 }
 const FLY = 32; // world units per scroll unit
+
+// per-vertex soft cast shadow (march the height grid toward the sun) + cheap AO from the surrounding heights
+function bakeLight(tp, NX) {
+  const N = tp.count, NZ = N / NX, H = new Float32Array(N);
+  for (let i = 0; i < N; i++) H[i] = tp.getY(i);
+  const x0 = tp.getX(0), z0 = tp.getZ(0), sx = tp.getX(1) - x0, sz = tp.getZ(NX) - z0;
+  const at = (x, z) => {
+    let fx = (x - x0) / sx, fz = (z - z0) / sz;
+    if (fx < 0 || fz < 0 || fx > NX - 1.001 || fz > NZ - 1.001) return -99;
+    const ix = fx | 0, iz = fz | 0; fx -= ix; fz -= iz;
+    const k = iz * NX + ix, a = H[k] + (H[k + 1] - H[k]) * fx, b = H[k + NX] + (H[k + NX + 1] - H[k + NX]) * fx;
+    return a + (b - a) * fz;
+  };
+  const L = [-.62, .6, -.36], lh = Math.hypot(L[0], L[2]), dx = L[0] / lh, dz = L[2] / lh, rise = L[1] / lh;
+  const out = new Float32Array(N * 2);
+  for (let i = 0; i < N; i++) {
+    const x = tp.getX(i), z = tp.getZ(i), h = H[i] + .3;
+    let sh = 1, t = 1.5;
+    for (let k = 0; k < 36 && sh > 0; k++) {
+      const d = at(x + dx * t, z + dz * t);
+      sh = Math.min(sh, 5 * (h + rise * t - d) / t);
+      t += .8 + t * .09;
+    }
+    let occ = 0;
+    for (let k = 0; k < 8; k++) { const a = k * .785, r = k & 1 ? 5 : 13, d = at(x + Math.cos(a) * r, z + Math.sin(a) * r); if (d > -99) occ += Math.max(0, d - H[i]) / r; }
+    out[i * 2] = sm(0, 1, sh);
+    out[i * 2 + 1] = clamp(1 - occ * .14, .35, 1);
+  }
+  return out;
+}
 
 function initGL() {
   let renderer;
@@ -788,8 +840,9 @@ function initGL() {
   const tp = tGeo.attributes.position;
   for (let i = 0; i < tp.count; i++) tp.setY(i, height(tp.getX(i), tp.getZ(i)));
   tGeo.computeVertexNormals();
+  tGeo.setAttribute('aSA', new THREE.BufferAttribute(bakeLight(tp, tGeo.parameters.widthSegments + 1), 2));
   const terrainU = { uTime, uIntro: { value: 0 }, uTopo: { value: 0 }, uNightIn: nIn, uNightOut: nOut, uTint, uTintAmt, uHaze: { value: HAZE }, uNightHaze: { value: NHAZE } };
-  const terrain = new THREE.Mesh(tGeo, new THREE.ShaderMaterial({ uniforms: terrainU, vertexShader: TERRAIN_VS, fragmentShader: TERRAIN_FS, extensions: { derivatives: true } }));
+  const terrain = new THREE.Mesh(tGeo, new THREE.ShaderMaterial({ uniforms: terrainU, defines: { DET: MOBILE ? 3 : 5 }, vertexShader: TERRAIN_VS, fragmentShader: TERRAIN_FS, extensions: { derivatives: true } }));
   terrain.frustumCulled = false;
   scene.add(terrain);
 
