@@ -3,23 +3,55 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>小店網站範例｜SQL1024</title>
-<meta name="description" content="五家虛構小店的手機網站範例：甜點預購、髮廊預約、小吃外帶、民宿訂房、手作報名，最後都接到 LINE。">
+<title>小店手機網站・LINE 接單｜SQL1024</title>
+<meta name="description" content="幫在地小店做手機上直接接單的網站：客人挑好、選好日期，訂單一鍵傳到你的 LINE。8 個虛構小店範例都能點進去實際操作。">
 <meta name="theme-color" content="#e8e4dd">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sql1024-sql.github.io/shop-demos/">
+<meta property="og:title" content="小店手機網站・LINE 接單｜SQL1024">
+<meta property="og:description" content="手機上直接接單的小店網站，訂單一鍵傳到你的 LINE。8 個範例都能點進去實際操作。">
+<meta property="og:image" content="https://sql1024-sql.github.io/shop-demos/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chiron+Hei+HK:wght@500;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chiron+Hei+HK:wght@900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "SQL1024 小店手機網站",
+  "description": "幫在地小店做手機上直接接單的網站，訂單一鍵傳到店家的 LINE。",
+  "url": "https://sql1024-sql.github.io/shop-demos/",
+  "image": "https://sql1024-sql.github.io/shop-demos/assets/og.jpg",
+  "areaServed": "TW",
+  "priceRange": "NT$3,000–30,000",
+  "founder": { "@type": "Person", "name": "SQL1024" }
+}
+</script>
 <style>
   :root { --desk: #e8e4dd; --ink: #1c1a17; --soft: #5f5a52; --line: #cfc9bf; --gutter: clamp(16px, 4vw, 56px); }
   [hidden] { display: none !important; }
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
   body { margin: 0; background: var(--desk); color: var(--ink); font: clamp(15px, 1rem + .15vw, 17px)/1.75 "Noto Sans TC", system-ui, sans-serif; overflow-x: hidden; }
   ::selection { background: var(--ink); color: var(--desk); }
   :focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
   header { padding: clamp(40px, 8vw, 96px) var(--gutter) clamp(28px, 4vw, 48px); max-width: 1400px; margin: 0 auto; }
-  h1 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(2.6rem, 9vw, 6.4rem); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
-  header p { margin: 18px 0 0; max-width: 34em; color: var(--soft); }
+  h1 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(2.2rem, 8.4vw, 5.6rem); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+  header p { margin: 14px 0 0; max-width: 34em; color: var(--soft); }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+  .btn, .open { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--ink); color: var(--ink); text-decoration: none; font-weight: 700; font-size: .92rem; transition: background-color .2s, color .2s; }
+  .btn { min-height: 48px; padding: 0 22px; font-size: 1rem; }
+  .btn:hover, .open:hover { background: var(--ink); color: var(--desk); }
+  .btn-main { background: var(--ink); color: var(--desk); }
+  .btn-main::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #06c755; }
+  .btn-main:hover { background: #000; }
+  .btn-big { min-height: 64px; padding: 0 36px; font-size: 1.2rem; }
+  .fab { display: none; }
   .row { list-style: none; margin: 0; padding: 8px var(--gutter) 40px; display: flex; gap: clamp(18px, 2.4vw, 32px); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: var(--soft) transparent; }
   @media (min-width: 1240px) { .row { max-width: 1400px; margin: 0 auto; overflow: visible; } }
   .shop { flex: 0 0 min(72vw, 250px); scroll-snap-align: start; display: grid; gap: 14px; align-content: start; }
@@ -28,96 +60,198 @@
   .phone img { display: block; width: 100%; height: auto; aspect-ratio: 390 / 844; border-radius: 22px; }
   .shop:nth-child(odd) .phone { transform: rotate(-1.5deg); }
   .shop:nth-child(even) .phone { transform: rotate(1.2deg) translateY(18px); }
-  .phone:hover, .phone:focus-visible { transform: rotate(0) translateY(-6px); }
-  .shop h2 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.35rem; margin: 18px 0 0; line-height: 1.3; }
-  .shop h2 small { display: block; font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: .8rem; color: var(--soft); }
+  .phone:hover { transform: rotate(0) translateY(-6px); }
+  .shop h3 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.35rem; margin: 18px 0 0; line-height: 1.3; }
+  .shop h3 small, .extra h3 small { display: block; font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: .8rem; color: var(--soft); }
   .shop p { margin: 0; color: var(--soft); font-size: .92rem; }
-  .open { justify-self: start; min-height: 44px; display: inline-flex; align-items: center; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--ink); color: var(--ink); text-decoration: none; font-weight: 700; font-size: .92rem; transition: background-color .2s, color .2s; }
-  .open:hover { background: var(--ink); color: var(--desk); }
+  .shop .fix, .extra .fix { color: var(--ink); font-weight: 700; }
+  .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .tags li { padding: 1px 10px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.45); font-size: .78rem; }
+  .open { justify-self: start; }
   .extra { max-width: 1400px; margin: 0 auto; padding: clamp(24px, 4vw, 48px) var(--gutter) clamp(40px, 6vw, 72px); border-top: 1px solid var(--line); display: grid; grid-template-columns: min(72vw, 250px) 1fr; gap: clamp(20px, 4vw, 56px); align-items: center; }
+  .extras .extra:first-child { border-top: 0; }
   .extra .phone { transform: rotate(-1.5deg); }
-  .extra h2 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(1.6rem, 4vw, 2.6rem); line-height: 1.2; margin: 0 0 14px; }
-  .extra h2 small { display: block; font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: .9rem; color: var(--soft); margin-bottom: 6px; }
-  .extra p { margin: 0 0 18px; max-width: 30em; color: var(--soft); }
-  @media (max-width: 640px) { .extra { grid-template-columns: 1fr; } .extra .phone { max-width: 250px; } }
+  .extra h3 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(1.6rem, 4vw, 2.6rem); line-height: 1.2; margin: 0 0 14px; }
+  .extra h3 small { font-size: .9rem; margin-bottom: 6px; }
+  .extra p { margin: 0 0 14px; max-width: 30em; color: var(--soft); }
+  .extra .tags { margin-bottom: 18px; }
   .group { max-width: 1400px; margin: 0 auto; padding: clamp(24px, 4vw, 48px) var(--gutter) 8px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
   .group h2 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(1.4rem, 3vw, 2rem); margin: 0; }
   .group p { margin: 0; color: var(--soft); font-size: .92rem; }
-  .group + .extra { border-top: 0; }
+  .sec { max-width: 1400px; margin: 0 auto; padding: clamp(40px, 6vw, 80px) var(--gutter); border-top: 1px solid var(--line); }
+  .sec h2 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(1.6rem, 4vw, 2.6rem); line-height: 1.2; margin: 0 0 24px; }
+  .sec > p { margin: 0 0 24px; max-width: 34em; color: var(--soft); }
+  .steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+  .steps li { counter-increment: step; border-top: 3px solid var(--ink); padding-top: 14px; }
+  .steps b { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.3rem; }
+  .steps b::before { content: counter(step, decimal-leading-zero) "　"; color: var(--soft); }
+  .steps p { margin: 6px 0 0; color: var(--soft); }
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .plan { border: 1.5px solid var(--ink); border-radius: 24px; padding: 24px; background: rgba(255,255,255,.35); }
+  .plan h3 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.3rem; margin: 0; }
+  .plan .price { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.8rem; margin: 6px 0 10px; color: var(--ink); }
+  .plan p { margin: 0; color: var(--soft); }
+  #about p { max-width: 36em; margin: 0 0 12px; font-size: 1.05em; }
+  .faq details { border-bottom: 1px solid var(--line); max-width: 48em; }
+  .faq details:first-of-type { border-top: 1px solid var(--line); }
+  .faq summary { padding: 16px 0; font-weight: 700; cursor: pointer; }
+  .faq details p { margin: 0 0 18px; color: var(--soft); }
   footer { max-width: 1400px; margin: 0 auto; padding: 28px var(--gutter) 40px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; color: var(--soft); font-size: .86rem; }
-  @media (prefers-reduced-motion: reduce) { .phone { transition: none; } }
+  @media (max-width: 640px) {
+    header { padding-bottom: 20px; }
+    .shop { flex-basis: min(44vw, 250px); }
+    .extras { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); overscroll-behavior-x: contain; padding: 8px var(--gutter) 40px; scrollbar-width: thin; scrollbar-color: var(--soft) transparent; }
+    .extra { flex: 0 0 min(44vw, 250px); scroll-snap-align: start; margin: 0; padding: 0; border: 0; grid-template-columns: 1fr; gap: 14px; align-items: start; align-content: start; }
+    .extra h3 { font-size: 1.35rem; margin: 18px 0 0; }
+    .extra h3 small { font-size: .8rem; margin: 0; }
+    .extra p, .extra .tags { margin: 0; font-size: .92rem; }
+    .fab { display: inline-flex; position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 10; box-shadow: 0 12px 28px -10px rgba(28,26,23,.7); }
+    body { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  }
+  @media (prefers-reduced-motion: reduce) { .phone, .btn, .open { transition: none; } }
 </style>
 </head>
 <body>
 <header>
-  <h1>五家店，<br>五種接單方式。</h1>
-  <p>給在地小店的手機網站。客人在頁面上挑好、選好日期，最後一鍵把整理好的訂單傳到店家的 LINE，不需要後台、不用月費。每一家都可以點進去實際操作。</p>
+  <h1>手機上直接接單的<br>小店網站</h1>
+  <p>給在地小店的手機網站，最快 7 天上線、3,000 元起，客人下單後訂單直接傳到你的 LINE。</p>
+  <div class="cta">
+    <a class="btn btn-main" data-line href="#contact" target="_blank" rel="noopener">LINE 聊聊</a>
+    <a class="btn" href="#work">看作品</a>
+  </div>
 </header>
 
 <main>
-  <div class="group">
-    <h2>靜態網站</h2>
-    <p>小店接單網站，不需要後台，訂單一鍵傳到 LINE。</p>
+  <div class="group" id="work">
+    <h2>接單型網站</h2>
+    <p>5 個範例。客人用手機挑好、選好日期，整理好的訂單一鍵傳到你的 LINE，不用學後台。</p>
   </div>
   <ul class="row">
     <li class="shop">
-      <a class="phone" href="01-dessert/" aria-label="打開 暦菓子室 甜點預購"><img src="assets/01-dessert.jpg" alt="暦菓子室手機版首頁：撕頁日曆上寫著最早可取貨日" width="390" height="844" loading="lazy"></a>
-      <h2>暦菓子室<small>預約制甜點工作室</small></h2>
+      <a class="phone" href="01-dessert/" tabindex="-1" aria-hidden="true"><img src="assets/01-dessert.jpg" alt="暦菓子室手機版首頁：撕頁日曆上寫著最早可取貨日" width="390" height="844" fetchpriority="high"></a>
+      <h3>暦菓子室<small>預約制甜點工作室</small></h3>
+      <p class="fix">不用一則則回訊息喬日期，客人自己挑能取貨的日子。</p>
       <p>挑菓子、在月曆圈取貨日，自動擋掉週日週一和三天內的日子。</p>
-      <a class="open" href="01-dessert/">打開看看</a>
+      <ul class="tags"><li>一鍵傳 LINE</li><li>手機優先</li><li>免月費</li></ul>
+      <a class="open" href="01-dessert/" aria-label="打開看看：暦菓子室">打開看看</a>
     </li>
     <li class="shop">
-      <a class="phone" href="02-salon/" aria-label="打開 鏡室 髮廊預約"><img src="assets/02-salon.jpg" alt="鏡室手機版首頁：拱形鏡框裡的髮型插畫與宋體標題" width="390" height="844" loading="lazy"></a>
-      <h2>鏡室<small>個人髮廊・美容工作室</small></h2>
+      <a class="phone" href="02-salon/" tabindex="-1" aria-hidden="true"><img src="assets/02-salon.jpg" alt="鏡室手機版首頁：拱形鏡框裡的髮型插畫與宋體標題" width="390" height="844"></a>
+      <h3>鏡室<small>個人髮廊・美容工作室</small></h3>
+      <p class="fix">剪髮時不用停下來接電話，也能收預約。</p>
       <p>看價目和作品，選設計師與空檔，已被預約的時段不能點。</p>
-      <a class="open" href="02-salon/">打開看看</a>
+      <ul class="tags"><li>線上預約</li><li>一鍵傳 LINE</li><li>手機優先</li></ul>
+      <a class="open" href="02-salon/" aria-label="打開看看：鏡室">打開看看</a>
     </li>
     <li class="shop">
-      <a class="phone" href="03-hakka-noodles/" aria-label="打開 河壩粄條 小吃外帶"><img src="assets/03-hakka-noodles.jpg" alt="河壩粄條手機版首頁：燈箱招牌與大大的營業中" width="390" height="844" loading="lazy"></a>
-      <h2>河壩粄條<small>客家麵食小吃</small></h2>
+      <a class="phone" href="03-hakka-noodles/" tabindex="-1" aria-hidden="true"><img src="assets/03-hakka-noodles.jpg" alt="河壩粄條手機版首頁：燈箱招牌與大大的營業中" width="390" height="844"></a>
+      <h3>河壩粄條<small>客家麵食小吃</small></h3>
+      <p class="fix">尖峰時段不用邊煮邊抄外帶單，客人自己點好傳過來。</p>
       <p>依營業時間自動顯示有沒有開，點菜單直接填數量叫外帶。</p>
-      <a class="open" href="03-hakka-noodles/">打開看看</a>
+      <ul class="tags"><li>外帶點餐</li><li>營業狀態</li><li>免月費</li></ul>
+      <a class="open" href="03-hakka-noodles/" aria-label="打開看看：河壩粄條">打開看看</a>
     </li>
     <li class="shop">
-      <a class="phone" href="04-guesthouse/" aria-label="打開 慢郵局 民宿訂房"><img src="assets/04-guesthouse.jpg" alt="慢郵局手機版首頁：海邊黃昏與巨大的標題字" width="390" height="844" loading="lazy"></a>
-      <h2>慢郵局<small>海邊民宿・共享空間</small></h2>
+      <a class="phone" href="04-guesthouse/" tabindex="-1" aria-hidden="true"><img src="assets/04-guesthouse.jpg" alt="慢郵局手機版首頁：海邊黃昏與巨大的標題字" width="390" height="844" loading="lazy"></a>
+      <h3>慢郵局<small>海邊民宿・共享空間</small></h3>
+      <p class="fix">房型、日期、價格一次問清楚，不用來回報價。</p>
       <p>翻看房型明信片，在月曆選入住退房，價格自動算好。</p>
-      <a class="open" href="04-guesthouse/">打開看看</a>
+      <ul class="tags"><li>自動試算</li><li>一鍵傳 LINE</li><li>免訂房平台抽成</li></ul>
+      <a class="open" href="04-guesthouse/" aria-label="打開看看：慢郵局">打開看看</a>
     </li>
     <li class="shop">
-      <a class="phone" href="05-craft-studio/" aria-label="打開 小磁鐵手作教室 課程報名"><img src="assets/05-craft-studio.jpg" alt="小磁鐵手作教室手機版首頁：冰箱門上的小孩畫作" width="390" height="844" loading="lazy"></a>
-      <h2>小磁鐵手作教室<small>親子與成人手作課</small></h2>
+      <a class="phone" href="05-craft-studio/" tabindex="-1" aria-hidden="true"><img src="assets/05-craft-studio.jpg" alt="小磁鐵手作教室手機版首頁：冰箱門上的小孩畫作" width="390" height="844" loading="lazy"></a>
+      <h3>小磁鐵手作教室<small>親子與成人手作課</small></h3>
+      <p class="fix">報名資料一次收齊，不用一個個問人數和場次。</p>
       <p>依親子、成人、包場篩選課程，看剩餘名額，額滿自動擋下。</p>
-      <a class="open" href="05-craft-studio/">打開看看</a>
+      <ul class="tags"><li>課程報名</li><li>名額顯示</li><li>手機優先</li></ul>
+      <a class="open" href="05-craft-studio/" aria-label="打開看看：小磁鐵手作教室">打開看看</a>
     </li>
   </ul>
+
   <div class="group">
-    <h2>動態網站</h2>
-    <p>3D 與即時動畫的活動、形象網站。</p>
+    <h2>品牌展示型網站</h2>
+    <p>3 個範例。給活動、住宿、新品牌：用會動的畫面讓人記住你、想分享出去。</p>
   </div>
-  <section class="extra">
-    <a class="phone" href="06-prism-night/" aria-label="打開 PRISM NIGHT 3D 活動網站"><img src="assets/06-prism-night.jpg" alt="PRISM NIGHT 手機版首頁：磁磚牆上的巨大 PRISM 字與玻璃三角" width="390" height="844" loading="lazy"></a>
-    <div>
-      <h2><small>3D 活動網站</small>PRISM NIGHT</h2>
-      <p>虛構光影展的活動介紹頁。磁磚圓柱房間、會折射的玻璃三角、曲面螢幕作品輪播，捲動越快鏡頭越彎，桌機手機都能看。</p>
-      <a class="open" href="06-prism-night/">打開看看</a>
+  <div class="extras">
+    <section class="extra">
+      <a class="phone" href="06-prism-night/" tabindex="-1" aria-hidden="true"><img src="assets/06-prism-night.jpg" alt="PRISM NIGHT 手機版首頁：磁磚牆上的巨大 PRISM 字與玻璃三角" width="390" height="844" loading="lazy"></a>
+      <div>
+        <h3><small>3D 活動網站</small>PRISM NIGHT</h3>
+        <p class="fix">活動資訊不再只是一張海報，網址一貼出去就讓人想點。</p>
+        <p>虛構光影展的活動介紹頁。磁磚圓柱房間、會折射的玻璃三角、曲面螢幕作品輪播，捲動越快鏡頭越彎，桌機手機都能看。</p>
+        <ul class="tags"><li>3D 動畫</li><li>活動宣傳</li><li>手機可看</li></ul>
+        <a class="open" href="06-prism-night/" aria-label="打開看看：PRISM NIGHT">打開看看</a>
+      </div>
+    </section>
+    <section class="extra">
+      <a class="phone" href="07-altitude/" tabindex="-1" aria-hidden="true"><img src="assets/07-altitude.jpg" alt="ALTITUDE 手機版首頁：藍色夜空下的群山、樹下亮燈的小木屋與襯線大標" width="390" height="844" loading="lazy"></a>
+      <div>
+        <h3><small>互動形象網站</small>ALTITUDE</h3>
+        <p class="fix">讓客人訂房前先感受到住在這裡的氣氛。</p>
+        <p>虛構山中住宿品牌的形象頁。圓環載入後整片夜景從中間展開，山坡燈火閃爍、山谷起霧、流星劃過，滑鼠或手指滑過會拖出發光雲霧。</p>
+        <ul class="tags"><li>品牌形象</li><li>互動動畫</li><li>手機可看</li></ul>
+        <a class="open" href="07-altitude/" aria-label="打開看看：ALTITUDE">打開看看</a>
+      </div>
+    </section>
+    <section class="extra">
+      <a class="phone" href="08-whiteout/" tabindex="-1" aria-hidden="true"><img src="assets/08-whiteout.jpg" alt="WHITEOUT 手機版首頁：白色雪山峽谷、天空上的巨大 WHITEOUT 字與冰雪花" width="390" height="844" loading="lazy"></a>
+      <div>
+        <h3><small>3D 活動網站</small>WHITEOUT</h3>
+        <p class="fix">讓活動頁本身就是話題，觀眾會主動截圖分享。</p>
+        <p>虛構高山影展的活動介紹頁。往下捲，鏡頭就沿著白色雪山峽谷往前飛，轉彎會側傾、雪花迎面而來；會折射的冰雪花、曲面銀幕輪播影片，看到一半天色會轉成極光夜景，桌機手機都能看。</p>
+        <ul class="tags"><li>3D 動畫</li><li>活動宣傳</li><li>手機可看</li></ul>
+        <a class="open" href="08-whiteout/" aria-label="打開看看：WHITEOUT">打開看看</a>
+      </div>
+    </section>
+  </div>
+
+  <section class="sec" aria-labelledby="process-h">
+    <h2 id="process-h">合作流程</h2>
+    <ol class="steps">
+      <li><b>諮詢</b><p>先用 LINE 聊你的店和想收什麼單，不收費。</p></li>
+      <li><b>打樣</b><p>3 天內給你一版能用手機點的初稿。</p></li>
+      <li><b>上線</b><p>內容確認後 4 天內放上網路，給你網址。</p></li>
+      <li><b>交付</b><p>附上 QR code 和使用說明，上線後 30 天內小修免費。</p></li>
+    </ol>
+  </section>
+
+  <section class="sec" aria-labelledby="price-h">
+    <h2 id="price-h">報價範圍</h2>
+    <p>依功能多寡報價，聊過你的需求後給你明確金額。</p>
+    <div class="plans">
+      <article class="plan"><h3>小店名片頁</h3><p class="price">NT$3,000～5,000</p><p>一頁看完店家介紹、菜單或價目、營業時間、地圖和 LINE 按鈕。約 7 天上線。</p></article>
+      <article class="plan"><h3>接單型網站</h3><p class="price">NT$8,000～15,000</p><p>客人選品項或時段、價格自動算好，訂單整理成文字傳到你的 LINE。約 2 週上線。</p></article>
+      <article class="plan"><h3>品牌展示型網站</h3><p class="price">NT$15,000～30,000</p><p>3D 或動畫形象頁，適合活動、住宿和新品牌。約 3～4 週上線。</p></article>
     </div>
   </section>
-  <section class="extra">
-    <a class="phone" href="07-altitude/" aria-label="打開 ALTITUDE 山中住宿網站"><img src="assets/07-altitude.jpg" alt="ALTITUDE 手機版首頁：藍色夜空下的群山、樹下亮燈的小木屋與襯線大標" width="390" height="844" loading="lazy"></a>
-    <div>
-      <h2><small>互動形象網站</small>ALTITUDE</h2>
-      <p>虛構山中住宿品牌的形象頁。圓環載入後整片夜景從中間展開，山坡燈火閃爍、山谷起霧、流星劃過，滑鼠或手指滑過會拖出發光雲霧。</p>
-      <a class="open" href="07-altitude/">打開看看</a>
-    </div>
+
+  <section class="sec" id="about" aria-labelledby="about-h">
+    <h2 id="about-h">關於我</h2>
+    <p>我是 SQL1024，來自新竹的學生，平常做網站和各種小工具，也接個人和小店的案子。</p>
+    <p>想法還沒很清楚也沒關係，先傳訊息跟我說你想解決什麼，我幫你想怎麼做。</p>
   </section>
-  <section class="extra">
-    <a class="phone" href="08-whiteout/" aria-label="打開 WHITEOUT 3D 影展網站"><img src="assets/08-whiteout.jpg" alt="WHITEOUT 手機版首頁：白色雪山峽谷、天空上的巨大 WHITEOUT 字與冰雪花" width="390" height="844" loading="lazy"></a>
-    <div>
-      <h2><small>3D 活動網站</small>WHITEOUT</h2>
-      <p>虛構高山影展的活動介紹頁。往下捲，鏡頭就沿著白色雪山峽谷往前飛，轉彎會側傾、雪花迎面而來；會折射的冰雪花、曲面銀幕輪播影片，看到一半天色會轉成極光夜景，桌機手機都能看。</p>
-      <a class="open" href="08-whiteout/">打開看看</a>
-    </div>
+
+  <section class="sec faq" aria-labelledby="faq-h">
+    <h2 id="faq-h">常見問題</h2>
+    <details>
+      <summary>訂單怎麼送到我手上？</summary>
+      <p>客人選好後，網站會把訂單整理成一段文字；客人按「傳到 LINE」打開 LINE、選你的帳號送出，你就會在 LINE 收到，也可以複製文字貼給你。網站本身不存訂單、沒有後台，確認和收款都在 LINE 上跟客人談。</p>
+    </details>
+    <details>
+      <summary>要改價格或菜單怎麼改？</summary>
+      <p>價格、菜單、營業時間和公休日都寫在網站的資料裡，傳 LINE 告訴我要改什麼，我改好重新上線，上線 30 天內免費，之後改文字或價格每次 NT$300。範例裡「已被預約」的時段和剩餘名額是示範資料，不會跟真實預約自動同步；正式上線時可以由我依你給的狀況手動更新，或拿掉改在 LINE 上確認。</p>
+    </details>
+    <details>
+      <summary>要月費嗎？</summary>
+      <p>不用。網站是純網頁，沒有後台和資料庫，可以放在免費的網頁空間（例如 Cloudflare Pages）。只有想用自己的網址（例如 .com.tw）時，每年要付網域費約 NT$400～800。</p>
+    </details>
+  </section>
+
+  <section class="sec" id="contact" aria-labelledby="contact-h">
+    <h2 id="contact-h">想讓你的店也能用手機接單？</h2>
+    <p>傳個 LINE 說說你的店，我會在 24 小時 內回你。</p>
+    <a class="btn btn-main btn-big" data-line href="#contact" target="_blank" rel="noopener">LINE 聊聊</a>
   </section>
 </main>
 
@@ -125,5 +259,12 @@
   <span>所有店名、活動、人物、地址、價格與評論皆為虛構，非真實店家。</span>
   <span>製作：SQL1024</span>
 </footer>
+
+<a class="btn btn-main fab" data-line href="#contact" target="_blank" rel="noopener">LINE 聊聊</a>
+
+<script>
+  const LINE_URL = 'https://line.me/R/ti/p/%40529mddpm';
+  document.querySelectorAll('[data-line]').forEach((a) => { a.href = LINE_URL; });
+</script>
 </body>
 </html>
