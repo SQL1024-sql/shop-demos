@@ -22,6 +22,8 @@
   --gutter:clamp(16px,3.6vw,52px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color-scheme:dark;transition:background-color .5s}
+html:has(body.light){background:#d9d5d4}
 html,body{height:100%;overflow:hidden;overscroll-behavior:none;font-family:var(--sans);color:var(--ink)}
 body{touch-action:none;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;background:radial-gradient(120% 80% at 50% 50%,#160e38,var(--bg) 70%)}
 body.light{--ink:#16131f;--dim:#5f5a72;--soft:#2d2938;--line:rgba(22,19,31,.25)}
@@ -377,9 +379,17 @@ addEventListener('wheel', e => {
   const d = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
   scrollTo(target + clamp(d, -240, 240) / innerHeight * 1.7);
 }, { passive: true });
-let ty = 0, tt = 0;
-addEventListener('touchstart', e => { ty = e.touches[0].clientY; tt = target; }, { passive: true });
-addEventListener('touchmove', e => scrollTo(tt + (ty - e.touches[0].clientY) / innerHeight * 1.8), { passive: true });
+// touch: drag 1:1-ish, then keep the flick's momentum after the finger lifts
+const TOUCH = 2.4;
+let ty = 0, tt = 0, tv = 0, tPrev = 0, tLast = 0;
+addEventListener('touchstart', e => { ty = tPrev = e.touches[0].clientY; tt = target; tv = 0; tLast = performance.now(); }, { passive: true });
+addEventListener('touchmove', e => {
+  const y = e.touches[0].clientY, now = performance.now();
+  tv = tv * .5 + (tPrev - y) / innerHeight * TOUCH / Math.max(now - tLast, 8) * 1000 * .5;
+  tPrev = y; tLast = now;
+  scrollTo(tt + (ty - y) / innerHeight * TOUCH);
+}, { passive: true });
+addEventListener('touchend', () => { if (performance.now() - tLast < 90) scrollTo(target + clamp(tv * .35, -3, 3)); }, { passive: true });
 addEventListener('keydown', e => {
   const k = e.key, step = { ArrowDown: .35, ArrowUp: -.35, PageDown: 1, PageUp: -1 }[k];
   if (step) { e.preventDefault(); scrollTo(target + step); }
