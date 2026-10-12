@@ -27,7 +27,7 @@
   "url": "https://sql1024-sql.github.io/shop-demos/",
   "image": "https://sql1024-sql.github.io/shop-demos/assets/og.jpg",
   "areaServed": "TW",
-  "priceRange": "NT$2,000–30,000",
+  "priceRange": "NT$1,500–30,000",
   "founder": { "@type": "Person", "name": "SQL1024" }
 }
 </script>
@@ -48,7 +48,6 @@
   .btn { min-height: 48px; padding: 0 22px; font-size: 1rem; }
   .btn:hover, .open:hover { background: var(--ink); color: var(--desk); }
   .btn-main { background: var(--ink); color: var(--desk); }
-  .btn-main::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #06c755; }
   .btn-main:hover { background: #000; }
   .btn-big { min-height: 64px; padding: 0 36px; font-size: 1.2rem; }
   .fab { display: none; }
@@ -81,15 +80,14 @@
   .sec { max-width: 1400px; margin: 0 auto; padding: clamp(40px, 6vw, 80px) var(--gutter); border-top: 1px solid var(--line); }
   .sec h2 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(1.6rem, 4vw, 2.6rem); line-height: 1.2; margin: 0 0 24px; }
   .sec > p { margin: 0 0 24px; max-width: 34em; color: var(--soft); }
-  .steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
-  .steps li { counter-increment: step; border-top: 3px solid var(--ink); padding-top: 14px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+  .steps li { border-top: 1px solid var(--ink); padding-top: 14px; }
   .steps b { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.3rem; }
-  .steps b::before { content: counter(step, decimal-leading-zero) "　"; color: var(--soft); }
   .steps p { margin: 6px 0 0; color: var(--soft); }
-  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-  .plan { border: 1.5px solid var(--ink); border-radius: 24px; padding: 24px; background: rgba(255,255,255,.35); }
+  .plans { max-width: 64em; border-top: 1px solid var(--ink); }
+  .plan { display: grid; grid-template-columns: 9em 12em 1fr; gap: 4px 24px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--line); }
   .plan h3 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.3rem; margin: 0; }
-  .plan .price { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.8rem; margin: 6px 0 10px; color: var(--ink); }
+  .plan .price { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: 1.3rem; margin: 0; color: var(--ink); white-space: nowrap; }
   .plan p { margin: 0; color: var(--soft); }
   #about p { max-width: 36em; margin: 0 0 12px; font-size: 1.05em; }
   .faq details { border-bottom: 1px solid var(--line); max-width: 48em; }
@@ -97,6 +95,9 @@
   .faq summary { padding: 16px 0; font-weight: 700; cursor: pointer; }
   .faq details p { margin: 0 0 18px; color: var(--soft); }
   footer { max-width: 1400px; margin: 0 auto; padding: 28px var(--gutter) 40px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; color: var(--soft); font-size: .86rem; }
+  footer nav { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 0 24px; }
+  footer nav a { padding: 10px 0; color: var(--ink); font-weight: 700; text-decoration: none; }
+  footer nav a:hover { text-decoration: underline; }
   @media (max-width: 640px) {
     header { padding-bottom: 20px; }
     .shop { flex-basis: min(44vw, 250px); }
@@ -105,6 +106,7 @@
     .extra h3 { font-size: 1.35rem; margin: 18px 0 0; }
     .extra h3 small { font-size: .8rem; margin: 0; }
     .extra p, .extra .tags { margin: 0; font-size: .92rem; }
+    .plan { grid-template-columns: 1fr; }
     .fab { display: inline-flex; position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 10; box-shadow: 0 12px 28px -10px rgba(28,26,23,.7); }
     body { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
   }
@@ -114,7 +116,7 @@
 <body>
 <header>
   <h1>手機上直接接單的<br>小店網站</h1>
-  <p>給在地小店的手機網站，最快 7 天上線、2,000 元起，客人下單後訂單直接傳到你的 LINE。</p>
+  <p>給在地小店的手機網站，最快 7 天上線、1,500 元起，客人下單後訂單直接傳到你的 LINE。</p>
   <div class="cta">
     <a class="btn btn-main" data-line href="#contact" target="_blank" rel="noopener">LINE 聊聊</a>
     <a class="btn" href="#work">看作品</a>
@@ -171,14 +173,14 @@
 
   <div class="group">
     <h2>品牌展示型網站</h2>
-    <p>3 個範例。給活動、住宿、新品牌：用會動的畫面讓人記住你、想分享出去。</p>
+    <p>3 個範例。適合活動、住宿和新品牌，用 3D 和動畫介紹你的店或活動。</p>
   </div>
   <div class="extras">
     <section class="extra">
       <a class="phone" href="06-prism-night/" tabindex="-1" aria-hidden="true"><img src="assets/06-prism-night.jpg" alt="PRISM NIGHT 手機版首頁：磁磚牆上的巨大 PRISM 字與玻璃三角" width="390" height="844" loading="lazy"></a>
       <div>
         <h3><small>3D 活動網站</small>PRISM NIGHT</h3>
-        <p class="fix">活動資訊不再只是一張海報，網址一貼出去就讓人想點。</p>
+        <p class="fix">把展覽的場地、作品和日期做成一頁，分享一個網址就夠。</p>
         <p>虛構光影展的活動介紹頁。磁磚圓柱房間、會折射的玻璃三角、曲面螢幕作品輪播，捲動越快鏡頭越彎，桌機手機都能看。</p>
         <ul class="tags"><li>3D 動畫</li><li>活動宣傳</li><li>手機可看</li></ul>
         <a class="open" href="06-prism-night/" aria-label="打開看看：PRISM NIGHT">打開看看</a>
@@ -188,7 +190,7 @@
       <a class="phone" href="07-altitude/" tabindex="-1" aria-hidden="true"><img src="assets/07-altitude.jpg" alt="ALTITUDE 手機版首頁：藍色夜空下的群山、樹下亮燈的小木屋與襯線大標" width="390" height="844" loading="lazy"></a>
       <div>
         <h3><small>互動形象網站</small>ALTITUDE</h3>
-        <p class="fix">讓客人訂房前先感受到住在這裡的氣氛。</p>
+        <p class="fix">訂房前先讓客人看到這裡晚上的山長什麼樣子。</p>
         <p>虛構山中住宿品牌的形象頁。圓環載入後整片夜景從中間展開，山坡燈火閃爍、山谷起霧、流星劃過，滑鼠或手指滑過會拖出發光雲霧。</p>
         <ul class="tags"><li>品牌形象</li><li>互動動畫</li><li>手機可看</li></ul>
         <a class="open" href="07-altitude/" aria-label="打開看看：ALTITUDE">打開看看</a>
@@ -198,7 +200,7 @@
       <a class="phone" href="08-whiteout/" tabindex="-1" aria-hidden="true"><img src="assets/08-whiteout.jpg" alt="WHITEOUT 手機版首頁：白色雪山峽谷、天空上的巨大 WHITEOUT 字與冰雪花" width="390" height="844" loading="lazy"></a>
       <div>
         <h3><small>3D 活動網站</small>WHITEOUT</h3>
-        <p class="fix">讓活動頁本身就是話題，觀眾會主動截圖分享。</p>
+        <p class="fix">影展介紹和放映作品放在同一頁，手機打開就能看。</p>
         <p>虛構高山影展的活動介紹頁。往下捲，鏡頭就沿著白色雪山峽谷往前飛，轉彎會側傾、雪花迎面而來；會折射的冰雪花、曲面銀幕輪播影片，看到一半天色會轉成極光夜景，桌機手機都能看。</p>
         <ul class="tags"><li>3D 動畫</li><li>活動宣傳</li><li>手機可看</li></ul>
         <a class="open" href="08-whiteout/" aria-label="打開看看：WHITEOUT">打開看看</a>
@@ -218,11 +220,11 @@
 
   <section class="sec" aria-labelledby="price-h">
     <h2 id="price-h">報價範圍</h2>
-    <p>依功能多寡報價，聊過你的需求後給你明確金額。</p>
+    <p>依功能多寡報價，聊過你的需求後給你明確金額。<br>後台：只有你能登入的管理頁面，可以自己改內容、看訂單。</p>
     <div class="plans">
-      <article class="plan"><h3>小店名片頁</h3><p class="price">NT$2,000～4,000</p><p>一頁看完店家介紹、菜單或價目、營業時間、地圖和 LINE 按鈕。約 7 天上線。</p></article>
-      <article class="plan"><h3>接單型網站</h3><p class="price">NT$8,000～15,000</p><p>客人選品項或時段、價格自動算好，訂單整理成文字傳到你的 LINE。約 2 週上線。</p></article>
-      <article class="plan"><h3>品牌展示型網站</h3><p class="price">NT$15,000～30,000</p><p>3D 或動畫形象頁，適合活動、住宿和新品牌。約 3～4 週上線。</p></article>
+      <article class="plan"><h3>店家網站</h3><p class="price">NT$1,500～3,000</p><p>店家介紹、菜單或價目、營業時間，客人點好後訂單傳到你的 LINE。不用月費，約 1～2 週上線。</p></article>
+      <article class="plan"><h3>品牌形象網站</h3><p class="price">NT$5,000～10,000</p><p>用 3D 或動畫做形象頁，適合活動、住宿和新品牌。不用月費，約 3～4 週上線。</p></article>
+      <article class="plan"><h3>有後台的網站</h3><p class="price">NT$15,000～30,000</p><p>自己登入改菜單和價格，預約滿了自動關閉，訂單存起來隨時能查。另加主機費，約 4～6 週上線。</p></article>
     </div>
   </section>
 
@@ -236,28 +238,39 @@
     <h2 id="faq-h">常見問題</h2>
     <details>
       <summary>訂單怎麼送到我手上？</summary>
-      <p>客人選好後，網站會把訂單整理成一段文字；客人按「傳到 LINE」打開 LINE、選你的帳號送出，你就會在 LINE 收到，也可以複製文字貼給你。網站本身不存訂單、沒有後台，確認和收款都在 LINE 上跟客人談。</p>
+      <p>客人選好後，網站會把訂單整理成一段文字；客人按「傳到 LINE」打開 LINE、選你的帳號送出，你就會在 LINE 收到，也可以複製文字貼給你。網站本身不存訂單，確認和收款都在 LINE 上跟客人談；選有後台的網站，訂單會存起來，登入就能查。</p>
     </details>
     <details>
       <summary>要改價格或菜單怎麼改？</summary>
-      <p>價格、菜單、營業時間和公休日都寫在網站的資料裡，傳 LINE 告訴我要改什麼，我改好重新上線，上線 30 天內免費，之後改文字或價格每次 NT$300。範例裡「已被預約」的時段和剩餘名額是示範資料，不會跟真實預約自動同步；正式上線時可以由我依你給的狀況手動更新，或拿掉改在 LINE 上確認。</p>
+      <p>價格、菜單、營業時間和公休日都寫在網站的資料裡，傳 LINE 告訴我要改什麼，我改好重新上線，上線 30 天內免費，之後改文字或價格每次 NT$300。範例裡「已被預約」的時段和剩餘名額是示範資料，不會跟真實預約自動同步；正式上線時可以由我依你給的狀況手動更新，或拿掉改在 LINE 上確認。選有後台的網站，就能自己登入改。</p>
     </details>
     <details>
       <summary>要月費嗎？</summary>
-      <p>不用。網站是純網頁，沒有後台和資料庫，可以放在免費的網頁空間（例如 Cloudflare Pages）。只有想用自己的網址（例如 .com.tw）時，每年要付網域費約 NT$400～800。</p>
+      <p>店家網站和品牌形象網站不用，它們是純網頁，可以放在免費的網頁空間（例如 Cloudflare Pages）。有後台的網站需要主機和資料庫，一般小店用量每月約 NT$0～300。想用自己的網址（例如 .com.tw）的話，每年另付網域費約 NT$400～800。</p>
+    </details>
+    <details>
+      <summary>為什麼有後台的網站比較貴？</summary>
+      <p>因為要多做一整套東西：除了客人看到的頁面，還要做只有你能登入的管理頁面，以及存訂單和菜單的資料庫。網站會存客人的姓名和電話，所以登入保護和資料安全要多花時間做好。上線後主機也要持續運作，壞了要有人修，所以工時和責任都比純網頁多很多。</p>
     </details>
   </section>
 
   <section class="sec" id="contact" aria-labelledby="contact-h">
-    <h2 id="contact-h">想讓你的店也能用手機接單？</h2>
-    <p>傳個 LINE 說說你的店，我會在 24 小時 內回你。</p>
+    <h2 id="contact-h">傳個 LINE 給我</h2>
+    <p>說說你的店和想解決的事，24 小時內回你。</p>
     <a class="btn btn-main btn-big" data-line href="#contact" target="_blank" rel="noopener">LINE 聊聊</a>
   </section>
 </main>
 
 <footer>
+  <nav aria-label="頁尾導覽">
+    <a href="#work">作品</a>
+    <a href="#process-h">合作流程</a>
+    <a href="#price-h">報價</a>
+    <a href="#faq-h">常見問題</a>
+    <a data-line href="#contact" target="_blank" rel="noopener">LINE</a>
+  </nav>
   <span>所有店名、活動、人物、地址、價格與評論皆為虛構，非真實店家。</span>
-  <span>製作：SQL1024</span>
+  <span>© 2026 SQL1024</span>
 </footer>
 
 <a class="btn btn-main fab" data-line href="#contact" target="_blank" rel="noopener">LINE 聊聊</a>
