@@ -64,16 +64,13 @@
   .shop h3 small, .extra h3 small { display: block; font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: .8rem; color: var(--soft); }
   .shop p { margin: 0; color: var(--soft); font-size: .92rem; }
   .shop .fix, .extra .fix { color: var(--ink); font-weight: 700; }
-  .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-  .tags li { padding: 1px 10px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.45); font-size: .78rem; }
   .open { justify-self: start; }
   .extra { max-width: 1400px; margin: 0 auto; padding: clamp(24px, 4vw, 48px) var(--gutter) clamp(40px, 6vw, 72px); border-top: 1px solid var(--line); display: grid; grid-template-columns: min(72vw, 250px) 1fr; gap: clamp(20px, 4vw, 56px); align-items: center; }
   .extras .extra:first-child { border-top: 0; }
   .extra .phone { transform: rotate(-1.5deg); }
   .extra h3 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(1.6rem, 4vw, 2.6rem); line-height: 1.2; margin: 0 0 14px; }
   .extra h3 small { font-size: .9rem; margin-bottom: 6px; }
-  .extra p { margin: 0 0 14px; max-width: 30em; color: var(--soft); }
-  .extra .tags { margin-bottom: 18px; }
+  .extra p { margin: 0 0 18px; max-width: 30em; color: var(--soft); }
   .group { max-width: 1400px; margin: 0 auto; padding: clamp(24px, 4vw, 48px) var(--gutter) 8px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
   .group h2 { font-family: "Chiron Hei HK", "Noto Sans TC", sans-serif; font-weight: 900; font-size: clamp(1.4rem, 3vw, 2rem); margin: 0; }
   .group p { margin: 0; color: var(--soft); font-size: .92rem; }
@@ -105,7 +102,7 @@
     .extra { flex: 0 0 min(44vw, 250px); scroll-snap-align: start; margin: 0; padding: 0; border: 0; grid-template-columns: 1fr; gap: 14px; align-items: start; align-content: start; }
     .extra h3 { font-size: 1.35rem; margin: 18px 0 0; }
     .extra h3 small { font-size: .8rem; margin: 0; }
-    .extra p, .extra .tags { margin: 0; font-size: .92rem; }
+    .extra p { margin: 0; font-size: .92rem; }
     .plan { grid-template-columns: 1fr; }
     .fab { display: inline-flex; position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 10; box-shadow: 0 12px 28px -10px rgba(28,26,23,.7); }
     body { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
@@ -134,7 +131,6 @@
       <h3>暦菓子室<small>預約制甜點工作室</small></h3>
       <p class="fix">不用一則則回訊息喬日期，客人自己挑能取貨的日子。</p>
       <p>挑菓子、在月曆圈取貨日，自動擋掉週日週一和三天內的日子。</p>
-      <ul class="tags"><li>一鍵傳 LINE</li><li>手機優先</li><li>免月費</li></ul>
       <a class="open" href="01-dessert/" aria-label="打開看看：暦菓子室">打開看看</a>
     </li>
     <li class="shop">
@@ -142,7 +138,6 @@
       <h3>鏡室<small>個人髮廊・美容工作室</small></h3>
       <p class="fix">剪髮時不用停下來接電話，也能收預約。</p>
       <p>看價目和作品，選設計師與空檔，已被預約的時段不能點。</p>
-      <ul class="tags"><li>線上預約</li><li>一鍵傳 LINE</li><li>手機優先</li></ul>
       <a class="open" href="02-salon/" aria-label="打開看看：鏡室">打開看看</a>
     </li>
     <li class="shop">
@@ -150,7 +145,6 @@
       <h3>河壩粄條<small>客家麵食小吃</small></h3>
       <p class="fix">尖峰時段不用邊煮邊抄外帶單，客人自己點好傳過來。</p>
       <p>依營業時間自動顯示有沒有開，點菜單直接填數量叫外帶。</p>
-      <ul class="tags"><li>外帶點餐</li><li>營業狀態</li><li>免月費</li></ul>
       <a class="open" href="03-hakka-noodles/" aria-label="打開看看：河壩粄條">打開看看</a>
     </li>
     <li class="shop">
@@ -158,7 +152,6 @@
       <h3>慢郵局<small>海邊民宿・共享空間</small></h3>
       <p class="fix">房型、日期、價格一次問清楚，不用來回報價。</p>
       <p>翻看房型明信片，在月曆選入住退房，價格自動算好。</p>
-      <ul class="tags"><li>自動試算</li><li>一鍵傳 LINE</li><li>免訂房平台抽成</li></ul>
       <a class="open" href="04-guesthouse/" aria-label="打開看看：慢郵局">打開看看</a>
     </li>
     <li class="shop">
@@ -166,7 +159,6 @@
       <h3>小磁鐵手作教室<small>親子與成人手作課</small></h3>
       <p class="fix">報名資料一次收齊，不用一個個問人數和場次。</p>
       <p>依親子、成人、包場篩選課程，看剩餘名額，額滿自動擋下。</p>
-      <ul class="tags"><li>課程報名</li><li>名額顯示</li><li>手機優先</li></ul>
       <a class="open" href="05-craft-studio/" aria-label="打開看看：小磁鐵手作教室">打開看看</a>
     </li>
   </ul>
@@ -182,7 +174,6 @@
         <h3><small>3D 活動網站</small>PRISM NIGHT</h3>
         <p class="fix">把展覽的場地、作品和日期做成一頁，分享一個網址就夠。</p>
         <p>虛構光影展的活動介紹頁。磁磚圓柱房間、會折射的玻璃三角、曲面螢幕作品輪播，捲動越快鏡頭越彎，桌機手機都能看。</p>
-        <ul class="tags"><li>3D 動畫</li><li>活動宣傳</li><li>手機可看</li></ul>
         <a class="open" href="06-prism-night/" aria-label="打開看看：PRISM NIGHT">打開看看</a>
       </div>
     </section>
@@ -192,7 +183,6 @@
         <h3><small>互動形象網站</small>ALTITUDE</h3>
         <p class="fix">訂房前先讓客人看到這裡晚上的山長什麼樣子。</p>
         <p>虛構山中住宿品牌的形象頁。圓環載入後整片夜景從中間展開，山坡燈火閃爍、山谷起霧、流星劃過，滑鼠或手指滑過會拖出發光雲霧。</p>
-        <ul class="tags"><li>品牌形象</li><li>互動動畫</li><li>手機可看</li></ul>
         <a class="open" href="07-altitude/" aria-label="打開看看：ALTITUDE">打開看看</a>
       </div>
     </section>
@@ -202,7 +192,6 @@
         <h3><small>3D 活動網站</small>WHITEOUT</h3>
         <p class="fix">影展介紹和放映作品放在同一頁，手機打開就能看。</p>
         <p>虛構高山影展的活動介紹頁。往下捲，鏡頭就沿著白色雪山峽谷往前飛，轉彎會側傾、雪花迎面而來；會折射的冰雪花、曲面銀幕輪播影片，看到一半天色會轉成極光夜景，桌機手機都能看。</p>
-        <ul class="tags"><li>3D 動畫</li><li>活動宣傳</li><li>手機可看</li></ul>
         <a class="open" href="08-whiteout/" aria-label="打開看看：WHITEOUT">打開看看</a>
       </div>
     </section>
