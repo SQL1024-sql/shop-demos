@@ -5,3 +5,5 @@ PRODUCT.md
 DESIGN.md
 .omc
 .playwright-mcp
+*.db
+__pycache__/

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>炊煙 柴火台菜｜線上訂位</title>
+<meta name="description" content="炊煙是一間台南柴火台菜餐廳（虛構範例）。線上即時查看空位、訂位、候補，用訂位代碼自行查詢、修改或取消。">
+<meta name="theme-color" content="#e2513a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='3' fill='%23b3301c'/%3E%3Crect x='5' y='5' width='22' height='22' rx='1' fill='none' stroke='%23efebe1' stroke-width='1.6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<!--
+THESIS: 一張台南印刷廠排好的紅紙告示加訂席單；拒絕深色 hero、發光、圓角卡片與 chip 選單的餐廳模板。
+OWN-WORLD: 紅紙 #e2513a 整片當底、墨 #15100c 印字、白報紙 #ebe8de、朱 #b3301c 只當印章與選取；一套鉛字（仙人掌明體）、單線與雙線版框、方格字釘、直排。沒有漸層、陰影、半透明。
+STORY: 客人一眼看懂這是台南柴火台菜、今晚還有沒有位、多少錢；在訂席單上選字釘、蓋章送出，拿到印好的訂席單。
+FIRST VIEWPORT: 紅紙滿版；右側直排「炊煙」與店址；左側版框告示寫今晚空位與價目；底部一塊墨色「訂位」。
+FORM: 鉛字活版印刷（自列第 4 / 7），seed 6110b9e9。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+
+<header class="top">
+  <a class="brand" href="#top"><span class="seal seal-sm" aria-hidden="true"><span>炊</span><span>煙</span></span>炊煙</a>
+  <nav aria-label="主選單"><a href="#menu">菜單</a><a href="#info">須知</a><a href="#manage">查詢訂位</a></nav>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-title">
+      <h1 id="hero-title">炊煙</h1>
+      <p class="hero-sub">台南中西區・柴火台菜</p>
+    </div>
+    <div class="notice">
+      <div class="notice-live-wrap"><p class="notice-live" id="today-status" aria-live="polite">查詢今天空位中…</p><ul class="today-slots" id="today-slots" aria-label="今天有位的時段"></ul></div>
+      <p class="notice-lede">龍眼木的火從下午三點燒到打烊，跟著節氣換菜，一桌一桌慢慢上。</p>
+      <table class="notice-price">
+        <tr><th>午間六道</th><td>九百八十元</td></tr>
+        <tr><th>晚間十道</th><td>一千八百八十元</td></tr>
+      </table>
+      <p class="notice-foot">每位計・另收一成服務費</p>
+    </div>
+    <div class="hero-act">
+      <a class="ink-btn" href="#book">訂位</a>
+      <a class="hero-link" href="#menu">看這季菜單</a>
+    </div>
+  </section>
+
+  <section class="book" id="book" aria-labelledby="book-title">
+    <div class="edit-banner" id="edit-banner" hidden>
+      <span>正在修改訂位 <b id="edit-code"></b></span>
+      <button type="button" class="text-btn" id="edit-quit">放棄修改</button>
+    </div>
+
+    <form id="book-form" class="sheet">
+      <header class="sheet-head">
+        <h2 id="book-title">訂席單</h2>
+        <p>空位即時更新・客滿時段可登記候補</p>
+      </header>
+
+      <div class="row" role="group" aria-labelledby="l-party">
+        <h3 class="row-label" id="l-party">人數</h3>
+        <div class="row-body">
+          <div class="sorts" id="party"></div>
+          <p class="hint" id="party-hint"></p>
+        </div>
+      </div>
+
+      <div class="row" role="group" aria-labelledby="l-date">
+        <h3 class="row-label" id="l-date">日期</h3>
+        <div class="row-body"><div class="tray" id="dates"><p class="hint">載入中…</p></div></div>
+      </div>
+
+      <div class="row" role="group" aria-labelledby="l-time">
+        <h3 class="row-label" id="l-time">時間</h3>
+        <div class="row-body" id="slots" aria-live="polite"><p class="hint">先選日期</p></div>
+      </div>
+
+      <div class="row" role="group" aria-labelledby="l-contact">
+        <h3 class="row-label" id="l-contact">聯絡</h3>
+        <div class="row-body">
+          <fieldset id="contact" class="plain">
+            <legend class="sr">聯絡資料</legend>
+            <div class="fields">
+              <label><span class="lab">姓名</span><input name="name" required maxlength="40" autocomplete="name"></label>
+              <label><span class="lab">手機</span><input name="phone" required inputmode="tel" autocomplete="tel" pattern="0[\d\s\-]{8,12}" placeholder="0912-345-678"></label>
+            </div>
+          </fieldset>
+          <details class="extra" id="extra">
+            <summary>座位、場合、Email<span class="opt">選填</span></summary>
+            <fieldset id="extra-fields" class="plain">
+              <legend class="sr">特別需求</legend>
+              <label><span class="lab">Email<span class="opt">選填</span></span><input name="email" type="email" maxlength="100" autocomplete="email"></label>
+              <div class="pick"><span class="lab">座位偏好<span class="opt">盡量安排</span></span><div class="sorts sorts-word" id="area"></div></div>
+              <div class="pick"><span class="lab">用餐目的</span><div class="sorts sorts-word" id="occasion"></div></div>
+            </fieldset>
+          </details>
+          <label class="notes"><span class="lab">備註<span class="opt">過敏、兒童椅、慶生</span></span><textarea name="notes" maxlength="300" rows="2"></textarea></label>
+        </div>
+      </div>
+
+      <div class="stick" id="stick" hidden>
+        <p class="summary" id="summary" aria-live="polite">還沒選時間</p>
+        <p class="error" id="book-error" role="alert"></p>
+        <button class="ink-btn" id="book-submit" type="submit">確認訂位</button>
+        <p class="stick-note">保留 15 分鐘・免訂金・可用代碼線上改期</p>
+      </div>
+    </form>
+
+    <div class="slip" id="done" hidden tabindex="-1">
+      <div class="stamp" id="done-stamp" aria-hidden="true"><span>訂</span><span>妥</span></div>
+      <h3 class="slip-title" id="done-title"></h3>
+      <div id="done-code-wrap">
+        <p class="slip-label">訂位代碼</p>
+        <p class="code" id="done-code"></p>
+      </div>
+      <table class="slip-info" id="done-info"></table>
+      <p class="hint" id="done-hint"></p>
+      <div class="slip-actions">
+        <button type="button" class="ink-btn" id="done-copy">複製代碼</button>
+        <button type="button" class="line-btn" id="done-ics">加入行事曆</button>
+        <button type="button" class="line-btn" id="done-manage">查詢・修改</button>
+        <button type="button" class="line-btn" id="done-again">再訂一筆</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu" id="menu" aria-labelledby="menu-title">
+    <div class="menu-head">
+      <h2 id="menu-title">寒露・秋季套餐</h2>
+      <p>菜色依當天漁獲調整。素食、過敏請在訂位備註寫下，廚房另外準備。</p>
+    </div>
+    <div class="boards">
+      <article class="board">
+        <header><h3>午間六道</h3><p>九百八十元</p></header>
+        <ol>
+          <li>烏魚子・白蘿蔔・柚皮</li>
+          <li>龍眼木煙燻鯖魚</li>
+          <li>柴燒菜脯蛋</li>
+          <li>麻油松阪豬・老薑</li>
+          <li>當季時蔬・豬油拌</li>
+          <li>桂圓米糕・杏仁茶</li>
+        </ol>
+      </article>
+      <article class="board">
+        <header><h3>晚間十道</h3><p>一千八百八十元</p></header>
+        <ol>
+          <li>四季冷盤・五味醬</li>
+          <li>烏魚子・白蘿蔔・柚皮</li>
+          <li>龍眼木煙燻鯖魚</li>
+          <li>古早味八寶丸</li>
+          <li>柴燒紅蟳米糕</li>
+          <li>麻油松阪豬・老薑</li>
+          <li>炭烤午仔魚・破布子</li>
+          <li>當季時蔬・豬油拌</li>
+          <li>蒜頭雞湯</li>
+          <li>桂圓米糕・杏仁茶</li>
+        </ol>
+      </article>
+    </div>
+  </section>
+
+  <section class="info" id="info" aria-labelledby="info-title">
+    <div class="info-grid">
+      <div>
+        <h2 id="info-title">營業時間</h2>
+        <table class="hours" id="hours"><tbody></tbody></table>
+        <p class="hint">表上是可入座的時段，每桌用餐 <span id="dining">120</span> 分鐘。</p>
+      </div>
+      <div>
+        <h2>地址・電話</h2>
+        <p class="addr">台南市中西區範例路 12 號<br><a href="tel:060001024">06-000-1024</a></p>
+        <h2>訂位須知</h2>
+        <ol class="rules">
+          <li>訂位保留 15 分鐘，逾時將釋出座位。</li>
+          <li>9 位以上、包場請來電洽詢。</li>
+          <li>用餐前 1 小時以前，可用訂位代碼線上修改或取消。</li>
+          <li>酌收一成服務費；可自備酒水，不收開瓶費。</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="manage" id="manage" aria-labelledby="manage-title">
+    <div class="sheet sheet-narrow">
+      <header class="sheet-head">
+        <h2 id="manage-title">查詢訂位</h2>
+        <p>輸入訂位代碼和訂位手機，可以改人數、時間或取消。</p>
+      </header>
+      <form id="lookup-form" class="lookup">
+        <label><span class="lab">訂位代碼</span><input name="code" required maxlength="10" autocapitalize="characters" autocomplete="off" placeholder="例如 K7M2QX"></label>
+        <label><span class="lab">手機</span><input name="phone" required inputmode="tel" autocomplete="tel" pattern="0[\d\s\-]{8,12}" placeholder="0912-345-678"></label>
+        <button class="ink-btn" type="submit">查詢</button>
+        <p class="error" id="lookup-error" role="alert"></p>
+      </form>
+      <div id="lookup-result" tabindex="-1"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>炊煙為虛構餐廳，菜色、價格、地址皆為範例作品示範用。</p>
+  <p>範例活版所 排印</p>
+  <p><a href="/admin/">店家後台 Demo</a></p>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

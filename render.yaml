@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: chuiian-booking
+    runtime: python
+    plan: free
+    rootDir: 09-restaurant
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: SECRET_KEY
+        generateValue: true
