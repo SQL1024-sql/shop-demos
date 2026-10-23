@@ -145,6 +145,7 @@ a{color:inherit;text-decoration:none}
 #contact .lead{margin:0 auto}
 #contact .cta-row{justify-content:center}
 .fine{margin-top:20px;font:400 10px/1.7 var(--mono);letter-spacing:.12em;color:var(--dim)}
+.fine a{text-decoration:underline;text-underline-offset:3px}
 
 @media (max-width:760px){
   .nav-links,.hud,.rail,.news,.more{display:none}
@@ -269,7 +270,7 @@ a{color:inherit;text-decoration:none}
     <h2 class="h rise" id="contact-t">JOIN THE NIGHT</h2>
     <p class="lead rise">早鳥票 11/30 截止，只有 800 張。</p>
     <div class="cta-row rise"><a class="btn primary" href="mailto:hello@prism-night.example?subject=%E5%A0%B1%E5%90%8D%20PRISM%20NIGHT">立即報名 →</a><a class="btn ghost" href="mailto:hello@prism-night.example?subject=%E5%90%88%E4%BD%9C%E6%8F%90%E6%A1%88">合作提案</a></div>
-    <p class="fine rise">hello@prism-night.example<br>本頁為虛構活動 demo</p>
+    <p class="fine rise">hello@prism-night.example<br>本頁為虛構活動 demo <a data-back href="../">回作品集</a></p>
   </section>
 </main>
 
@@ -876,5 +877,6 @@ function initGL() {
   tryStart();
 }
 </script>
+<script src="../assets/back.js"></script>
 </body>
 </html>
